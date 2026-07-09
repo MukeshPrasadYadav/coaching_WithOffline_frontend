@@ -1,6 +1,7 @@
 // src/store/auth.store.ts
 import { create } from "zustand";
 import { api } from "../api/Client";
+import type { Address } from "./coaching.store";
 
 export const Role = {
   ADMIN: "ADMIN",
@@ -33,8 +34,16 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  contactInfo: string;
+  contactNumber: string;
   role: Role;
+  coachingIds : string[];
+  batchIds: string[];
+  address :Address;
+}
+export interface UserBasicInfo{
+    name :string;
+    email :string;
+    contactNumber :string;
 }
 
 interface AuthState {
