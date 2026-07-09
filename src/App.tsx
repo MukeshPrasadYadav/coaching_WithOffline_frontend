@@ -7,6 +7,9 @@ import ProtectedRoutes from './helpers/ProtectedRoutes'
 import ProtectedAuth from './helpers/ProtectedAuth'
 import SignUpPage from './pages/auth/SignUpPage'
 import Layout from './Components/Layout'
+import Batches from './coaching/pages/Batch'
+import Setting from './coaching/pages/Setting'
+import TeacherProfile from './pages/otherPages/TeacherProfile'
 const App = () => {
   return (
 
@@ -42,9 +45,12 @@ const App = () => {
       <Route path="/home" element={<Home />} />
 
       {/* Future pages */}
+      <Route path="/batches" element={<Batches />} />
+      <Route path="/settings" element ={<Setting />} />
+      <Route path="/teacherProfile" element ={<TeacherProfile />} />
       {/* <Route path="/students" element={< />} />
       <Route path="/teachers" element={<Teachers />} />
-      <Route path="/batches" element={<Batches />} />
+      
       <Route path="/settings" element={<Settings />} /> */}
     </Route>
 

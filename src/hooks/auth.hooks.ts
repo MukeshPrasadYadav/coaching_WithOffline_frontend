@@ -13,8 +13,7 @@ export const useLogin = () => {
 
   return useMutation({
     mutationFn: AuthService.login,
-    onSuccess: async (data) =>{
-        console.log(data);
+    onSuccess: async () =>{
         const user = await AuthService.getCurrentUser();
         setUser(user);
         queryClient.setQueryData(['user'], user);
