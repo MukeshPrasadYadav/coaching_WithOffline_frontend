@@ -2,9 +2,7 @@ import { alpha, createTheme } from '@mui/material/styles';
 
 export const createAppTheme = (mode: 'light' | 'dark') => {
   const isDark = mode === 'dark';
-  const primary = '#4F46E5';
-  const accent = '#0F766E';
-
+  const primary = '#5B4CF0';
   return createTheme({
     palette: {
       mode,
@@ -62,9 +60,6 @@ export const createAppTheme = (mode: 'light' | 'dark') => {
             minHeight: 40,
             paddingInline: 18,
             letterSpacing: '-0.01em',
-          },
-          containedPrimary: {
-            boxShadow: `0 10px 24px ${alpha(primary, 0.18)}`,
           },
         },
       },

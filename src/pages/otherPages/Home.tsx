@@ -7,7 +7,7 @@ import { Navigate } from "react-router-dom";
 
 
 const CoachingDashboard = lazy(() => import("../../Components/dashboards/CoachingDashboard"));
-const TeacerDashboard = lazy(() => import("../../Components/dashboards/TeacherDashboarad"))
+const TeacherDashboard = lazy(() => import("../teacher/Dashboard"))
 const StudentDashboard = lazy(() => import("../../Components/dashboards/StudentDashboard"))
 const ParentDashboard = lazy(() => import("../../Components/dashboards/ParentDashboard"))
 
@@ -29,7 +29,7 @@ const Home = () => {
       {role === Role.ADMIN && <CoachingDashboard />}
       {role === Role.PARENT && <ParentDashboard />}
       {role === Role.STUDENT && <StudentDashboard />}
-      {role === Role.TEACHER && <TeacerDashboard />}
+      {role === Role.TEACHER && <TeacherDashboard />}
     </Suspense>
   )
 }

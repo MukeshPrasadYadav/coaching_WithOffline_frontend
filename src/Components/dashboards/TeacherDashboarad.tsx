@@ -3,8 +3,10 @@
 
 import AnalyticsCard from '../ui/AnalyticsCard'
 import { BookOpen, IndianRupee, SquareCheck, User } from 'lucide-react'
+import ListWithBadge from '../ui/ListWithBadge'
 
 const TeacherDashboarad = () => {
+  const items = [{id:0,primary:"default"},{id:1,primary:"default"},{id:2,primary:"default"}];
   return (
     <div className='space-y-6'>
       {/* card area */}
@@ -17,6 +19,7 @@ const TeacherDashboarad = () => {
 
         {/* middle section */}
       <div className='flex flex-row gap-x-2'>
+        <ListWithBadge title='My coaching centers' items={items}/>
       
 
       </div>
