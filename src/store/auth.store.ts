@@ -39,6 +39,7 @@ export interface User {
   coachingIds : string[];
   batchIds: string[];
   address :Address;
+  isProfileCompleted : boolean;
 }
 export interface UserBasicInfo{
     name :string;

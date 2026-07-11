@@ -1,108 +1,77 @@
 // src/coaching/pages/Setting.tsx
-
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import { useState } from "react";
+import { Navigate } from "react-router-dom";
 
 import CoachingInformationCard from "../components/CoachingInformationCard";
 import AddressCard from "../components/AddressCard";
 
-import { Role, useAuthStore } from "../../store/auth.store";
+import { useAuthStore } from "../../store/auth.store";
 import {
   useAddCoaching,
   useGetCoaching,
   useUpdateCoachingAddress,
-  useUpdateCoachingInfo
+  useUpdateCoachingInfo,
 } from "../../hooks/coaching.hooks";
-import { Navigate } from "react-router-dom";
+import { useCoachingStore } from "../../store/coaching.store";
 
-
-const Setting = () => {
-
-  const [editingGeneral, setEditingGeneral] = useState(false);
+const CompleteCoachingProfile = () => {
+    const [editingGeneral, setEditingGeneral] = useState(false);
   const [editingAddress, setEditingAddress] = useState(false)
+
   const user = useAuthStore((state) => state.user);
-   
-
- 
-  
-
-  const coachingId = user?.coachingIds?.[0] ?? "";
-  
-
-  const {
+    const coachingId = user?.coachingIds?.[0] ?? "";
+    const {
     data: coaching,
     isLoading,
   } = useGetCoaching(coachingId);
 
-  console.log("coachngId",coachingId)
-  console.log("coaching ",coaching)
-  ;
-
-  const addCoaching = useAddCoaching();
-
+      const addCoaching = useAddCoaching();
   const updateGeneral = useUpdateCoachingInfo(coachingId);
 
   const updateAddress = useUpdateCoachingAddress(coachingId);
 
-  if (!user) return <Navigate to ="/login" replace />
-  
-
- 
-
-  if (isLoading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        py={10}
-      >
-        <CircularProgress />
-      </Box>
-    );
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
   return (
-    <Box
-      maxWidth={1000}
-      mx="auto"
-      py={4}
-      
-    >
-      {/* Header */}
-
-      <Typography
-        variant="h4"
-        fontWeight={700}
-      >
-        Coaching Settings
+    <Box maxWidth={1000} mx="auto" py={4}>
+      <Typography variant="h4" fontWeight={700}>
+        Complete Coaching Profile
       </Typography>
 
-      <Typography
-        color="text.secondary"
-        mb={4}
-      >
-        Manage your coaching profile.
-      </Typography>
+     
 
       <Stack spacing={3}>
-
-        {!coaching && (
-          <>
+        
           <CoachingInformationCard
-            editing
+            editing ={editingGeneral}
             loading={addCoaching.isPending}
             coaching={{
-              name: "",
-              ownerName: user.name,
-              ownerEmail: user.email,
-              ownerContactNumber: user.contactNumber,
+              name: coaching?.name ?? "",
+              ownerName: coaching?.ownerName ?? "",
+              ownerEmail: coaching?.ownerEmail ?? "",
+              ownerContactNumber: coaching?.ownerContactNumber ?? "",
             }}
-            onEdit={() => {}}
-            onCancel={() => {}}
-            onSubmit={(values) => {
-              addCoaching.mutate({
-                ...values,
-                address: {
+            onEdit={() => {
+                 setEditingGeneral(true)
+
+            }}
+            onCancel={() => {
+              setEditingGeneral(false)
+            }}
+            onSubmit={(values) =>{
+              updateGeneral.mutate({...values})
+            }}
+          />
+        
+
+        
+          <AddressCard
+            editing ={editingAddress}
+            loading={updateAddress.isPending}
+            address={ coaching?.address ?? {
                   country: "",
                   state: "",
                   city: "",
@@ -111,68 +80,23 @@ const Setting = () => {
                   postOffice: "",
                   building: "",
                   houseNo: "",
-                },
-              });
+                } }
+            onEdit={() => {
+              setEditingAddress(true)
+            }}
+            onCancel={() => {
+              setEditingAddress(false)
+            }}
+            onSubmit={(values) =>{
+              updateAddress.mutate({
+                ...values
+              })
             }}
           />
-              
-
-
-</>
-          
-        )}
-
-
-        {coaching && (
-          <>
-            <CoachingInformationCard
-              coaching={{
-                name: coaching.name,
-                ownerName: coaching.ownerName,
-                ownerEmail: coaching.ownerEmail,
-                ownerContactNumber:
-                  coaching.ownerContactNumber,
-              }}
-              editing={editingGeneral}
-              loading={updateGeneral.isPending}
-              onEdit={() =>
-                setEditingGeneral(true)
-              }
-              onCancel={() =>
-                setEditingGeneral(false)
-              }
-              onSubmit={(values) => {
-                updateGeneral.mutate({
-                  ...values,
-                });
-
-                setEditingGeneral(false);
-              }}
-            />
-
-            <AddressCard
-              address={coaching.address}
-              editing={editingAddress}
-              loading={updateAddress.isPending}
-              onEdit={() =>
-                setEditingAddress(true)
-              }
-              onCancel={() =>
-                setEditingAddress(false)
-              }
-              onSubmit={(values) => {
-                updateAddress.mutate({
-                  ...values,
-                });
-
-                setEditingAddress(false);
-              }}
-            />
-          </>
-        )}
+        
       </Stack>
     </Box>
   );
 };
 
-export default Setting;
+export default CompleteCoachingProfile;

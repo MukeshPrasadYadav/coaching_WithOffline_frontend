@@ -10,6 +10,7 @@ import Layout from './Components/Layout'
 import Batches from './coaching/pages/Batch'
 import Setting from './coaching/pages/Setting'
 import TeacherProfile from './pages/otherPages/TeacherProfile'
+import CompleteProfile from './pages/otherPages/CompleteProfile'
 const App = () => {
   return (
 
@@ -34,6 +35,8 @@ const App = () => {
       }
     />
 
+    <Route path ="/completeProfile" element={<CompleteProfile />} />
+
     {/* Protected Layout */}
     <Route
       element={
@@ -42,6 +45,7 @@ const App = () => {
         </ProtectedRoutes>
       }
     >
+
       <Route path="/home" element={<Home />} />
 
       {/* Future pages */}

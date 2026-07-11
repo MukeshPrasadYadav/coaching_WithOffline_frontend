@@ -12,6 +12,7 @@ export const useAddCoaching = () =>{
     return useMutation({
         mutationFn: CoachingService.addCoaching,
         onSuccess: (data) =>{
+          console.log("data after adding coaching",data)
             setCoaching(data);
             queryClient.setQueryData(['coaching'], data);
         }

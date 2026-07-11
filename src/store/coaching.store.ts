@@ -2,7 +2,6 @@
 // src/coaching/store/coachingStore.ts
 
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
 
 // src/coaching/types/coaching.ts
 

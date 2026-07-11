@@ -42,7 +42,7 @@ export const useGetUser = () => {
     gcTime: 15 * 60 * 1000,
     retry: 1,
     onSuccess: (data: any) => {
-      console.log('Fetched user:', data);
+      console.log("data from get me",data)
     },
   });
 };
