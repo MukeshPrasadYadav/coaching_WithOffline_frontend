@@ -43,11 +43,11 @@ export function Button({ variant = 'primary', sx, children, ...props }: ButtonPr
       {...variantProps}
       sx={[
         {
-          borderRadius: 999,
+          borderRadius: 10,
           px: 2,
           py: 1,
           textTransform: 'none',
-          fontWeight: 700,
+          fontWeight: 600,
         },
         toneSx,
         ...(Array.isArray(sx) ? sx : [sx]),

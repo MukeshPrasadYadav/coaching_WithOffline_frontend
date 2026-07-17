@@ -1,1 +1,0 @@
-// src/Components/pannel.tsx

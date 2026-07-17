@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  font-family: "Manrope", "Segoe UI", "Avenir Next", sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
   color-scheme: light;
+  --background: 248 250 252;
+  --card: 255 255 255;
+  --border: 229 231 235;
+  --text-primary: 17 24 39;
+  --text-secondary: 107 114 128;
+  --primary: 37 99 235;
 }
 
 html.dark {
@@ -20,8 +26,10 @@ body {
   min-width: 320px;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  background: rgb(var(--background));
+  color: rgb(var(--text-primary));
 }
 
 ::selection {
-  background: rgba(79, 70, 229, 0.22);
+  background: rgba(37, 99, 235, 0.2);
 }

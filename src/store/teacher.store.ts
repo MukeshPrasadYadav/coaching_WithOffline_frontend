@@ -1,16 +1,10 @@
 // src/store/teacher.store.ts
 import { create } from "zustand";
-import type { Address } from "./coaching.store";
 
 export interface Teacher {
-  id: string;
-
-  name : string;
-  contactNumber : string;
-
   subjects?: string[];
   languages?: string[];
-  address : Address;
+  fee : number
 }
 
 interface TeacherStore {

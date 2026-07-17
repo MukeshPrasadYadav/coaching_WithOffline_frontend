@@ -1,27 +1,30 @@
 // src/pages/otherPages/TeacherProfile.tsx
 import React, { useState } from 'react'
-import { Role, useAuthStore } from '../../store/auth.store';
+import { Role, useAuthStore, type User } from '../../store/auth.store';
 import { Navigate } from 'react-router-dom';
-import AddressCard from '../../coaching/components/AddressCard';
-import PersonalInfo from '../../Components/PersonalInfo';
-import { Autocomplete, Box, Card, Stack, TextField, Typography } from '@mui/material';
-import { useTeacherStore } from '../../store/teacher.store';
+import { Box, Card, Stack, Typography } from '@mui/material';
 import { useGetTeacher } from '../../hooks/teacher.hooks';
-import { useGetUser } from '../../hooks/auth.hooks';
-import { Grid } from 'lucide-react';
-import TeacherSider from '../../Components/sideBars/TeacherSider';
 import TeacherSpecificFormCard from '../../Components/ui/TeacherSpecificFormCard';
+import PersonalnfoCardForm from '../../coaching/components/PersonalnfoCardForm';
+import PersonalInfoCardForm from '../../coaching/components/PersonalnfoCardForm';
 
 
 const TeacherProfile = () => {
-     const [editingGeneral, setEditingGeneral] = useState(false);
-  const [editingAddress, setEditingAddress] = useState(false)
 
     const user = useAuthStore((state) => state.user);
   const teacherId = user?.id ?? "";
     const {data:teacher, isPending} = useGetTeacher(teacherId) 
     console.log("user",user);
     console.log("teacher",teacher)
+    const completeUser : User = { 
+      name : user?.name ?? "",
+            email : user?.email ?? "",
+            contactNumber : user?.contactNumber ?? "",
+            address : teacher?.address
+
+
+    }
+    console.log("complete user",completeUser)
 
 
   if(!user) return <Navigate to= {"/login"} replace />
@@ -29,7 +32,7 @@ const TeacherProfile = () => {
 
 
 
-   if (!teacher) return <Navigate to ="/login" replace />
+   if (!teacher && !isPending) return <Navigate to ="/login" replace />
    if(isPending) return <div>...pending</div>
 
   
@@ -55,48 +58,8 @@ const TeacherProfile = () => {
 
         {teacher && user && (
           <>
-            <PersonalInfo
-                user={{
-                name: user.name,
-                email: user.email,
-                contactNumber: user.contactNumber,
-                id:user?.id,
-                coachingIds : user.coachingIds,
-                batchIds:user.batchIds,
-                address: user.address
-              }}
-              editing={editingGeneral}
-              loading={false}
-              onEdit={() =>
-                setEditingGeneral(true)
-              }
-              onCancel={() =>
-                setEditingGeneral(false)
-              }
-              onSubmit={(values) => {
-                //
-              }}
-               
-            />
-
-            <AddressCard
-              address={teacher.address}
-              editing={editingAddress}
-              loading={false}
-              onEdit={() =>
-                setEditingAddress(true)
-              }
-              onCancel={() =>
-                setEditingAddress(false)
-              }
-              onSubmit={(values) => {
-                              
-                console.log("address",values)
-                setEditingAddress(false);
-              }}
-            />
-
-            <TeacherSpecificFormCard />
+            <PersonalInfoCardForm user = {completeUser} />
+            <TeacherSpecificFormCard teacher = {teacher} />
           </>
         )}
       </Stack>

@@ -11,6 +11,9 @@ import Batches from './coaching/pages/Batch'
 import Setting from './coaching/pages/Setting'
 import TeacherProfile from './pages/otherPages/TeacherProfile'
 import CompleteProfile from './pages/otherPages/CompleteProfile'
+import CoachingStudents from './pages/otherPages/CoachingStudents'
+import CoachingTeachers from './pages/otherPages/CoachingTeachers'
+import CoachingCourses from './pages/otherPages/CoachingCourses'
 const App = () => {
   return (
 
@@ -52,6 +55,10 @@ const App = () => {
       <Route path="/batches" element={<Batches />} />
       <Route path="/settings" element ={<Setting />} />
       <Route path="/teacherProfile" element ={<TeacherProfile />} />
+      <Route path ="/students" element ={ <CoachingStudents />} />
+      <Route path ="/teachers" element ={ <CoachingTeachers />} />
+      <Route path ="/courses" element ={ <CoachingCourses />} />
+
       {/* <Route path="/students" element={< />} />
       <Route path="/teachers" element={<Teachers />} />
       

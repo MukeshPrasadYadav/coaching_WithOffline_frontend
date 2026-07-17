@@ -8,24 +8,28 @@ const ParentSider  = lazy(()=>import("../sideBars/ParentSider"));
 const StudentSider = lazy(() => import("../sideBars/StudentSider"));
 const TeacherSider = lazy(() => import("../sideBars/TeacherSider"));
 
+export interface SidebarProps {
+  open: boolean;
+  isDesktop: boolean;
+  onClose: () => void;
+}
+
 // src/Components/ui/Sidebar.tsx
-export default function Sidebar() {
+export default function Sidebar({ open, isDesktop, onClose }: SidebarProps) {
 
 
    const user = useAuthStore(state => state.user)
     if(!user) return null;
   
     const role: Role = user.role
+    if (!open) return null;
+
   return (
-    <div className="w-64 border-r border-[rgb(var(--border))] bg-[rgb(var(--card))] h-screen p-4">
-      <div className="space-y-1">
-        <Suspense fallback={<div>...Loading </div>}>
-        {role === Role.ADMIN && <CoachingSider />}
-        {role === Role.PARENT && <ParentSider />}
-        {role === Role.STUDENT && <StudentSider />}
-        {role === Role.TEACHER && <TeacherSider />}
-        </Suspense>
-      </div>
-    </div>
+    <Suspense fallback={<div>...Loading </div>}>
+      {role === Role.ADMIN && <CoachingSider open={open} isDesktop={isDesktop} onClose={onClose} />}
+      {role === Role.PARENT && <ParentSider open={open} isDesktop={isDesktop} onClose={onClose} />}
+      {role === Role.STUDENT && <StudentSider open={open} isDesktop={isDesktop} onClose={onClose} />}
+      {role === Role.TEACHER && <TeacherSider open={open} isDesktop={isDesktop} onClose={onClose} />}
+    </Suspense>
   );
 }
