@@ -51,7 +51,7 @@ const StudentService = {
 
     const res = await api.get("/students", { params });
 
-    return toPageResponse<StudentResponse>(res.data.data)
+    return toPageResponse<StudentResponse>(res.data)
 
     
 }
