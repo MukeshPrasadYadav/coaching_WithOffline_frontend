@@ -2,7 +2,6 @@
 
 import {
   Drawer,
-  Toolbar,
   List,
   ListItemButton,
   ListItemIcon,
@@ -10,18 +9,13 @@ import {
   Divider,
   Typography,
   Box,
+  IconButton,
+  styled,
 } from "@mui/material";
 
 import {
   Dashboard,
-  School,
   Groups,
-  MenuBook,
-  Class,
-  EventAvailable,
-  Payments,
-  Assessment,
-  Settings,
   Subject,
   AccountBalance,
   People,
@@ -34,6 +28,22 @@ import {
 } from "@mui/icons-material";
 
 import { NavLink } from "react-router-dom";
+import { ChevronRight } from "lucide-react";
+
+const drawerWidth = 260
+
+interface SiderProp {
+  open: boolean;
+  isDesktop: boolean;
+  onClose: () => void;
+}
+
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  padding: theme.spacing(2),
+}));
 
 const menu = [
   {
@@ -56,26 +66,33 @@ const menu = [
   }
 ];
 
-const drawerWidth = 260
-
-const TeacherSider = () => {
+const TeacherSider = ({ open, isDesktop, onClose }: SiderProp) => {
   
     return (
         <Drawer
-          variant="permanent"
+          variant={isDesktop ? "permanent" : "temporary"}
+          open={open}
+          onClose={onClose}
+          ModalProps={{ keepMounted: true }}
           sx={{
-            width: drawerWidth,
+            width: open ? drawerWidth : 0,
+            flexShrink: 0,
             "& .MuiDrawer-paper": {
               width: drawerWidth,
               boxSizing: "border-box",
+              borderRight: "1px solid",
+              borderColor: "divider",
             },
           }}
         >
-          <Toolbar>
-            <Typography variant="h6" fontWeight="bold">
+          <DrawerHeader>
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               Coaching ERP
             </Typography>
-          </Toolbar>
+            <IconButton aria-label="Close sidebar" onClick={onClose}>
+              <ChevronRight />
+            </IconButton>
+          </DrawerHeader>
     
           <Divider />
     
@@ -94,6 +111,7 @@ const TeacherSider = () => {
                     key={item.text}
                     component={NavLink}
                     to={item.path}
+                    onClick={!isDesktop ? onClose : undefined}
                   >
                     <ListItemIcon>{item.icon}</ListItemIcon>
     

@@ -1,6 +1,5 @@
 // src/Components/dashboards/CoachingDashboard.tsx
 // src/Components/CoachingDashboard.tsx
-import React from 'react'
 import AnalyticsCard from '../ui/AnalyticsCard'
 import FeeCollectionChart from '../../coaching/components/FeeCollectionChart'
 import AdmissionChart from '../../coaching/components/AdmissionChart'
@@ -9,17 +8,17 @@ import RecentAdmissionCard from '../../coaching/components/RecentAdmissionCard'
 import PendingFeesCard from '../../coaching/components/PendingFeesCard'
 import AttendanceCard from '../../coaching/components/AttendanceCard'
 import NoticeCard from '../../coaching/components/NoticeCard'
-import { BookOpen, IndianRupee, SquareCheck, User } from 'lucide-react'
+import { CalendarCheck, IndianRupee, User, Users } from 'lucide-react'
 
 const CoachingDashboard = () => {
   return (
     <div className='space-y-6'>
       {/* card area */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-       <AnalyticsCard title="Total class" icon = {BookOpen} value ={10} subTitle='Across all coachings' iconBg='#F3E8FF' iconColor='#7C3AED'  />
-        <AnalyticsCard title="Total student" icon ={User} value ={10} subTitle='Across all coachings' iconBg='#E8F7EE' iconColor='#16A34A' />
-        <AnalyticsCard title="Subject teachings" icon ={SquareCheck} value = {6}  subTitle='Across all coachings' iconBg='#FFF1E8' iconColor='#F97316' />
-        <AnalyticsCard title="Total earning" icon = {IndianRupee } value ={1100} subTitle='From all classes' iconBg='#EEF4FF' iconColor='#2563EB' />
+       <AnalyticsCard title="Total Students" icon={Users} value={248} subTitle='Across active batches' iconBg='#EFF6FF' iconColor='#2563EB' />
+        <AnalyticsCard title="Teachers" icon={User} value={18} subTitle='Full-time and visiting' iconBg='#ECFDF5' iconColor='#10B981' />
+        <AnalyticsCard title="Today Attendance" icon={CalendarCheck} value='91%' subTitle='Average check-in rate' iconBg='#FFFBEB' iconColor='#F59E0B' />
+        <AnalyticsCard title="Revenue" icon={IndianRupee} value='1.1L' subTitle='Collected this month' iconBg='#EEF4FF' iconColor='#2563EB' />
       </div>
       <div className="grid
           grid-cols-1

@@ -14,13 +14,15 @@ import {
   useUpdateCoachingInfo,
 } from "../../hooks/coaching.hooks";
 import { useCoachingStore } from "../../store/coaching.store";
+import PersonalInfoCardForm from "../components/PersonalnfoCardForm";
 
 const CompleteCoachingProfile = () => {
     const [editingGeneral, setEditingGeneral] = useState(false);
   const [editingAddress, setEditingAddress] = useState(false)
 
   const user = useAuthStore((state) => state.user);
-    const coachingId = user?.coachingIds?.[0] ?? "";
+  console.log("user",user)
+    const coachingId = "";
     const {
     data: coaching,
     isLoading,
@@ -44,55 +46,11 @@ const CompleteCoachingProfile = () => {
      
 
       <Stack spacing={3}>
-        
-          <CoachingInformationCard
-            editing ={editingGeneral}
-            loading={addCoaching.isPending}
-            coaching={{
-              name: coaching?.name ?? "",
-              ownerName: coaching?.ownerName ?? "",
-              ownerEmail: coaching?.ownerEmail ?? "",
-              ownerContactNumber: coaching?.ownerContactNumber ?? "",
-            }}
-            onEdit={() => {
-                 setEditingGeneral(true)
 
-            }}
-            onCancel={() => {
-              setEditingGeneral(false)
-            }}
-            onSubmit={(values) =>{
-              updateGeneral.mutate({...values})
-            }}
-          />
+          <PersonalInfoCardForm user = {user} />
         
 
         
-          <AddressCard
-            editing ={editingAddress}
-            loading={updateAddress.isPending}
-            address={ coaching?.address ?? {
-                  country: "",
-                  state: "",
-                  city: "",
-                  area: "",
-                  pinCode: "",
-                  postOffice: "",
-                  building: "",
-                  houseNo: "",
-                } }
-            onEdit={() => {
-              setEditingAddress(true)
-            }}
-            onCancel={() => {
-              setEditingAddress(false)
-            }}
-            onSubmit={(values) =>{
-              updateAddress.mutate({
-                ...values
-              })
-            }}
-          />
         
       </Stack>
     </Box>

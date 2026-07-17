@@ -36,15 +36,8 @@ export interface User {
   email: string;
   contactNumber: string;
   role: Role;
-  coachingIds : string[];
-  batchIds: string[];
   address :Address;
   isProfileCompleted : boolean;
-}
-export interface UserBasicInfo{
-    name :string;
-    email :string;
-    contactNumber :string;
 }
 
 interface AuthState {

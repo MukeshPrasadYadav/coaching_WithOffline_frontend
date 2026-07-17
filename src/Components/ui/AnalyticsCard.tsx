@@ -1,6 +1,3 @@
-// src/Components/ui/AnalyticsCard.tsx
-
-import type { ReactNode } from "react";
 import Icon from "../Icons";
 import type { LucideIcon } from "lucide-react";
 
@@ -30,11 +27,21 @@ return (
         alignItems: "center",
         gap: "16px",
         background: "#FFFFFF",
-        border: "1px solid #ECECEC",
+        border: "1px solid #E5E7EB",
         borderRadius: "16px",
-        padding: "20px 24px",
-        width: "280px",
-        boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+        padding: "20px",
+        minWidth: 0,
+        width: "100%",
+        boxShadow: "0 4px 16px rgba(15,23,42,0.06)",
+        transition: "transform 180ms ease, box-shadow 180ms ease",
+      }}
+      onMouseEnter={(event) => {
+        event.currentTarget.style.transform = "translateY(-2px)";
+        event.currentTarget.style.boxShadow = "0 8px 22px rgba(15,23,42,0.08)";
+      }}
+      onMouseLeave={(event) => {
+        event.currentTarget.style.transform = "translateY(0)";
+        event.currentTarget.style.boxShadow = "0 4px 16px rgba(15,23,42,0.06)";
       }}
     >
       <div
@@ -57,8 +64,8 @@ return (
           style={{
             margin: 0,
             fontSize: "13px",
-            fontWeight: 500,
-            color: "#8A8A8E",
+            fontWeight: 600,
+            color: "#6B7280",
           }}
         >
           {title}
@@ -68,7 +75,7 @@ return (
             margin: "2px 0 0",
             fontSize: "26px",
             fontWeight: 700,
-            color: "#1A1A1E",
+            color: "#111827",
             lineHeight: 1.2,
           }}
         >
@@ -78,7 +85,7 @@ return (
           style={{
             margin: "2px 0 0",
             fontSize: "12px",
-            color: "#A5A5AA",
+            color: "#6B7280",
           }}
         >
           {subTitle}

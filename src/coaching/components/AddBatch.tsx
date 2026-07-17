@@ -12,7 +12,7 @@ const AddBatch = ({opean,coachingId,closeModel} : AddBatchProps) => {
   return (
     <CustomDrawer open ={opean} onClose={closeModel} title='Add Batch' size='xl' anchor='right' >
         <div>
-
+            Hello
         </div>
 
     </CustomDrawer>

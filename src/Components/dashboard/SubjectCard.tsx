@@ -1,3 +1,4 @@
+// src/Components/dashboard/SubjectCard.tsx
 import { Avatar, Box, Divider, Stack, Typography, alpha, useTheme } from '@mui/material';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import DashboardSection from './DashboardSection';
