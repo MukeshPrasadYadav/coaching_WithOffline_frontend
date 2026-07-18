@@ -5,8 +5,8 @@ import { SearchIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Role, useAuthStore } from '../../store/auth.store'
 import StudentForm from '../../Components/PanelsWithForms/StudentForm'
-import { useGetStudents } from '../../hooks/student.hook'
-import { type StudentFilter, type Student } from '../../services/StudentService'
+import { useExportStudents, useGetStudents } from '../../hooks/student.hook'
+import StudentService, { type StudentFilter, type Student } from '../../services/StudentService'
 import { useDebounce } from '../../hooks/debounce'
 
 type ModalType = "AddStudent" | "UpdateStudent" |  "RemoveStudent" | null;
@@ -24,7 +24,7 @@ type StudentRow = Student & {
 
 const CoachingStudents = () => {
 
-const [searchInput, setSearchInput] = useState("");           // ← immediate input
+const [searchInput, setSearchInput] = useState("");           
   const debouncedSearch = useDebounce(searchInput, 400);
 
 const [filter, setFilter] = useState<StudentFilter>({
@@ -41,13 +41,14 @@ useEffect(() => {
     setFilter(prev => ({
       ...prev,
       search: debouncedSearch,
-      pageNumber: 0,           // reset to first page on new search
+      pageNumber: 0,           
     }));
   }, [debouncedSearch]);
 
 
 
 const { data, isLoading, error, refetch } = useGetStudents(filter);
+const {download } = useExportStudents(filter);
         const user = useAuthStore((state) => state.user);
 
  
@@ -113,7 +114,9 @@ console.log("data in student page",data)
             
 
             {user?.role === Role.ADMIN && 
-            <Button startIcon={<UploadFile />} variant="outlined">
+            <Button
+            onClick={() => StudentService.exportStudents(filter)}
+             startIcon={<UploadFile />} variant="outlined">
              Export
             </Button>}
           </div>
