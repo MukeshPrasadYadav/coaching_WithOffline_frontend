@@ -51,10 +51,37 @@ const StudentService = {
 
     const res = await api.get("/students", { params });
 
-    return toPageResponse<StudentResponse>(res.data)
+    return toPageResponse<StudentResponse>(res.data.data)
 
     
-}
+},
+
+// Add this method
+exportStudents: async (params : StudentFilter): Promise<void> => {
+    try {
+        const response = await api.get("/students/export",  {
+            params,
+            responseType: 'blob',           // ← This is crucial
+        });
+
+        // Create download link
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        
+        link.href = url;
+        link.setAttribute('download', 'students.xlsx');   // filename
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+    } catch (error: any) {
+        console.error("Export failed:", error);
+        throw error; // or handle as per your error handling
+    }
+},
 };
 
 
