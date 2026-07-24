@@ -22,14 +22,11 @@ export const useAddCoaching = () =>{
    
 } 
 
- export const useGetCoaching = (coachingId: string) => {
+export const useGetCoaching = (enabled: boolean) => {
   return useQuery({
-    queryKey: ["coaching", coachingId],
-    queryFn: () => CoachingService.getCoaching(coachingId),
-    enabled: !!coachingId,
-    staleTime: 10 * 60 * 1000,
-    gcTime: 15 * 60 * 1000,
-    retry: 1,
+    queryKey: ["coaching"],
+    queryFn: CoachingService.getCoaching,
+    enabled,
   });
 };
 

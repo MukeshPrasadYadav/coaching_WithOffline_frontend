@@ -47,11 +47,8 @@ export default function CustomDrawer({
   }}
 >
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        px={2}
-        py={1.5}
+      className ="flex flex-row justify-between items-center px-2 py-1.5"
+        
       >
         <Typography variant="h6">{title}</Typography>
 

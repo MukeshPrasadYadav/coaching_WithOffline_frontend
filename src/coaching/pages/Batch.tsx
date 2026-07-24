@@ -5,6 +5,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useState } from "react";
 import { Role, useAuthStore } from "../../store/auth.store";
 import AddBatch from "../components/AddBatch";
+import BatchForm from "../../Components/PanelsWithForms/BatchForm";
 
 
 type ModalType = "AddBatch" | null;
@@ -12,7 +13,7 @@ type ModalType = "AddBatch" | null;
 interface ModalState{
   type: ModalType;
   params :{
-    coachingId : string
+    batchId : string
   };
 }
 
@@ -30,7 +31,7 @@ const Batch = () => {
   const [modal,setModal] = useState<ModalState>({
     type: null,
     params :{
-      coachingId: ""
+      batchId: ""
     }
   });
   return (
@@ -123,7 +124,7 @@ const Batch = () => {
     onPageChange={()=>""}
     onRowsPerPageChange={() =>""}
   />
-  <AddBatch opean= {modal.type === "AddBatch"} coachingId= {modal.params.coachingId ?? ""} closeModel={() => setModal({type: null,params:{coachingId:""}})} />
+  <BatchForm open = {modal.type === "AddBatch"} type="Add" batchId={null} closeModal={() => setModal({type: null , params:{batchId : ""}})} />
 </div>
 
 

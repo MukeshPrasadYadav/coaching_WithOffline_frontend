@@ -24,6 +24,10 @@ export interface CoachingInfo{
   ownerEmail : string;
   ownerContactNumber : string;
 }
+export interface TeacherCoachingInfo{
+  id: string | null;
+  name : string | null;
+}
 
 export interface Coaching {
   id: string;
@@ -31,9 +35,10 @@ export interface Coaching {
   ownerName: string;
   ownerEmail: string;
   ownerContactNumber: string;
-  status: CoachingStatus;
+  status?: CoachingStatus;
   address: Address;
   reasonForRemoving?: string | null;
+  teachers ?: TeacherCoachingInfo;
 
   totalStudents?: number;
   totalTeachers?: number;

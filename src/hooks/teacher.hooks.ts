@@ -44,12 +44,21 @@ export const useGetTeachers = (params: TeacherFilter) => {
   });
 };
 
-export const useExportTeachers = (params : TeacherFilter) =>{
+export const useGetTeacherByCoaching = (coachingId : string) =>{
+
     return useQuery({
-        queryKey: ["teachers", params],
-    queryFn: () => TeacherService.exportTeachers(params),
-    staleTime: 10 * 60 * 1000,
+        queryKey : ["teachers",coachingId],
+        queryFn : () => TeacherService.getTeacherByCoachng(coachingId),
+        staleTime: 10 * 60 * 1000,
     gcTime: 15 * 60 * 1000,
     retry: 1,
     })
 }
+
+
+
+export const useExportTeachers = () => {
+  return useMutation({
+    mutationFn: TeacherService.exportTeachers,
+  });
+};
