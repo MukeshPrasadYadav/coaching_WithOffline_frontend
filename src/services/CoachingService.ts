@@ -30,8 +30,8 @@ const CoachingService = {
     } ,
 
     
-  getCoaching: async (coachingId: string) => {
-    const res = await api.get(`/coaching/${coachingId}`);
+  getCoaching: async () => {
+    const res = await api.get(`/coaching`);
     return res.data.data;
   },
 

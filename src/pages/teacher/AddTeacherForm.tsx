@@ -1,21 +1,14 @@
-// src/Components/PanelsWithForms/TeacherForm.tsx
-// src/Components/PanelsWithForms/TeacherForm.tsx
+// src/pages/teacher/AddTeacherForm.tsx
+import { Autocomplete, Button, Chip, Divider, Grid, Stack, TextField, Typography } from '@mui/material';
 import { Form, Formik, getIn } from 'formik';
-import CustomDrawer from '../ui/CustomDrawer';
-import * as Yup from "yup";
 import type { Address } from '../../store/coaching.store';
-import { Autocomplete, Button, Divider, Grid, Stack, TextField, Typography, Chip, Box } from '@mui/material';
-import { useState } from 'react';
+import * as Yup from "yup"
 import { useAddTeacherByAdmin } from '../../hooks/teacher.hooks';
+import { useState } from 'react';
 
-type FormType = "Add" | "Update";
-
-interface TeacherFormProps {
-  type: FormType;
-  open: boolean;
-  teacherId: string | null;
-  closeModal: () => void;
-}
+const commonSubjects = ["Mathematics", "Physics", "Chemistry", "Biology", "English", "History", "Computer Science"];
+const commonBatches = ["Morning", "Evening", "Weekend"];
+const commonDegrees = ["B.Ed", "M.Sc", "B.Sc", "MA", "PhD", "B.A", "M.Ed"];
 
 export interface TeacherFormValues {
   name: string;
@@ -82,6 +75,7 @@ const schema = Yup.object({
   address: addressSchema,
 });
 
+
 const addressFields: Array<{ name: keyof Address; label: string }> = [
   { name: "country", label: "Country" },
   { name: "state", label: "State" },
@@ -93,29 +87,18 @@ const addressFields: Array<{ name: keyof Address; label: string }> = [
   { name: "houseNo", label: "House No." },
 ];
 
-// Sample options - you can move these to constants or fetch from API
-const commonSubjects = ["Mathematics", "Physics", "Chemistry", "Biology", "English", "History", "Computer Science"];
-const commonBatches = ["Morning", "Evening", "Weekend"];
-const commonDegrees = ["B.Ed", "M.Sc", "B.Sc", "MA", "PhD", "B.A", "M.Ed"];
+interface AddTeacherFormProps{
+      closeModal: () => void;
 
-const TeacherForm = ({ open, closeModal, teacherId }: TeacherFormProps) => {
-  const [newDegree, setNewDegree] = useState("");
-  const [newSubject, setNewSubject] = useState("");
-  const [newBatch, setNewBatch] = useState("");
+}
 
-  // Replace with your actual mutation hook
-  // const { mutate: addTeacher, isPending } = useAddTeacher(closeModal);
-  const {mutate: addTeacher,isPending} = useAddTeacherByAdmin(closeModal);
+const AddTeacherForm = ({closeModal} : AddTeacherFormProps) => {
+    const [newDegree, setNewDegree] = useState("");
+      const [newSubject, setNewSubject] = ("");
+      const {mutate: addTeacher,isPending} = useAddTeacherByAdmin(closeModal);
 
   return (
-    <CustomDrawer
-      open={open}
-      onClose={closeModal}
-      title={teacherId ? "Update Teacher" : "Add Teacher"}
-      size="lg"
-      anchor="right"
-    >
-      <Formik
+    <Formik
         enableReinitialize
         initialValues={initialValues}
         validationSchema={schema}
@@ -304,15 +287,14 @@ const TeacherForm = ({ open, closeModal, teacherId }: TeacherFormProps) => {
                   Cancel
                 </Button>
                 <Button  disabled = {isPending} variant="contained" type="submit">
-                  {teacherId === null ? "Add Teacher" : "Update Teacher"}
+                  {isPending ? "Adding teacher" : "Add teacher"}
                 </Button>
               </div>
             </Stack>
           </Form>
         )}
       </Formik>
-    </CustomDrawer>
-  );
-};
+  )
+}
 
-export default TeacherForm;
+export default AddTeacherForm

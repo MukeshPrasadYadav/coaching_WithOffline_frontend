@@ -30,12 +30,8 @@ export const useGetStudents = (params: StudentFilter) => {
   });
 };
 
-export const useExportStudents = (params : StudentFilter) =>{
-    return useQuery({
-        queryKey: ["students", params],
-    queryFn: () => StudentService.exportStudents(params),
-    staleTime: 10 * 60 * 1000,
-    gcTime: 15 * 60 * 1000,
-    retry: 1,
-    })
-}
+export const useExportStudents = () => {
+  return useMutation({
+    mutationFn: StudentService.exportStudents,
+  });
+};

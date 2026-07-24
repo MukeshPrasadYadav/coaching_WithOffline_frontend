@@ -7,10 +7,11 @@ import React, { useEffect, useState } from 'react'
 import { Role, useAuthStore } from '../../store/auth.store'
 import { useDebounce } from '../../hooks/debounce'
 import type { StudentFilter } from '../../services/StudentService'
-import TeacherForm from '../../Components/PanelsWithForms/TeacherForm'
+import TeacherForm from '../../Components/PanelsWithForms/ManageTeacher'
 import { useExportTeachers, useGetTeachers } from '../../hooks/teacher.hooks'
 import type { TeacherFilter } from '../../services/TeacherService'
 import TeacherService from '../../services/TeacherService'
+import ManageTeacher from '../../Components/PanelsWithForms/ManageTeacher'
 
 type ModalType = "AddTeacher" | "UpdateTeacher" |  "RemoveTeacher" |null;
 
@@ -219,7 +220,7 @@ const CoachingTeachers = () => {
     }}
 />    
  </Paper>
-<TeacherForm open={modal.type === "AddTeacher" } type= "Add" teacherId={null} closeModal={() => setModal({type : null , params :{teacherId : ""}})}/>
+<ManageTeacher open={modal.type === "AddTeacher" } type= "Add" teacherId={null} closeModal={() => setModal({type : null , params :{teacherId : ""}})}/>
   
 </div>
 

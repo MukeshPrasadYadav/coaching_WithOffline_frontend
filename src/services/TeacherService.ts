@@ -86,6 +86,11 @@ const TeacherService ={
             throw error; // or handle as per your error handling
         }
     },
+
+    getTeacherByCoachng : async (coachigId : string) =>{
+        const res = await api.get(`teacher/${coachigId}`);
+        return res.data.data;
+    }
 }
 
 export default TeacherService;
