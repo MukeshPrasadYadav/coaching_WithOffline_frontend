@@ -13,18 +13,19 @@ export interface Student{
     name : string;
     email : string;
     contactNumber : string;
-    address : Address;
+     gender: Gender | null;
+
     batches : BatchRecord[];
 }
 
 export type CompleteStudentProfile = Omit<Student, "batches"> & {
   dob: string;
-  gender: Gender | null;
   fatherName: string;
   motherName: string;
   parentName: string;
   parentPhone: string;
   parentEmail?: string;
+  address : Address;
 };
 
 
