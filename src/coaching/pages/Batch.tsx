@@ -1,11 +1,16 @@
 // src/coaching/pages/Batch.tsx
 import { Add, FilterList, Refresh, UploadFile } from "@mui/icons-material";
-import { Button, Chip, InputAdornment, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
+import { Button, Chip, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Role, useAuthStore } from "../../store/auth.store";
 import AddBatch from "../components/AddBatch";
 import BatchForm from "../../Components/PanelsWithForms/BatchForm";
+import { useDebounce } from "../../hooks/debounce";
+import type { BatchFilter } from "../../services/BatchService";
+import { useExportBatch, useGetBatches } from "../../hooks/batch.hooks";
+import BatchService from "../../services/BatchService";
+import { LoaderCircle, SearchCodeIcon } from "lucide-react";
 
 
 type ModalType = "AddBatch" | null;
@@ -18,14 +23,35 @@ interface ModalState{
 }
 
 const Batch = () => {
-    const user = useAuthStore((state) => state.user);
+
+  const [searchInput, setSearchInput] = useState("");           
+    const debouncedSearch = useDebounce(searchInput, 400);
   
-  const rows = [
-    { name: "Class XII Science", teacher: "Dr. Mehta", students: 42, status: "Active" },
-    { name: "Class XI Foundation", teacher: "Anita Rao", students: 36, status: "Active" },
-    { name: "JEE Weekend", teacher: "Rohit Sen", students: 28, status: "Review" },
-    { name: "NEET Chemistry", teacher: "Priya Nair", students: 31, status: "Active" },
-  ];
+  const [filter, setFilter] = useState<BatchFilter>({
+      search: "",
+      fromDate: "",
+      toDate: "",
+      pageNumber: 0,
+      pageSize: 10,
+  });
+  
+  useEffect(() => {
+      setFilter(prev => ({
+        ...prev,
+        search: debouncedSearch,
+        pageNumber: 0,           
+      }));
+    }, [debouncedSearch]);
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
+    const user = useAuthStore((state) => state.user);
+    const { data, isLoading, error, refetch } = useGetBatches(filter);
+    const batches = data?.items
+
+    console.log("batches",data)
+  
   
 
   const [modal,setModal] = useState<ModalState>({
@@ -35,17 +61,30 @@ const Batch = () => {
     }
   });
   return (
-    <div className="space-y-5">
+    <div className="flex h-full min-h-0 flex-col">
       <div>
         <Typography variant="h4">Batches</Typography>
         <Typography sx={{ color: "text.secondary", mt: 0.5 }}>
           Manage class groups, teacher assignments, and enrollment capacity.
         </Typography>
       </div>
+      <Paper
+        sx={{
+          mt: 2,
+          p: 3,
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
+          bgcolor: "#FFFFFF",
+          border: "1px solid #E5E7EB",
+          borderRadius: 4,
+          boxShadow: "0 4px 16px rgba(15,23,42,0.06)",
+        }}
+      >
       {/* command bar */}
-      <div className="flex flex-col gap-3 rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-[0_4px_16px_rgba(15,23,42,0.06)] md:flex-row md:items-center md:justify-between">
-        {/* left side */}
-        <div className="flex flex-wrap gap-2">
+      <div className="flex shrink-0 flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
           {user?.role === Role.ADMIN && 
           <Button
            startIcon= {<Add />}
@@ -57,10 +96,14 @@ const Batch = () => {
           <Button startIcon={<FilterList />} variant="outlined">
             Filter
           </Button>
-          <Button startIcon = {<Refresh />} variant="outlined">
+          <Button
+          onClick={() => refetch()}
+           startIcon = {<Refresh />} variant="outlined">
             Refresh
           </Button>
-          <Button startIcon={<UploadFile />} variant="outlined">
+          <Button
+          onClick={() => BatchService.exportBatch(filter)}
+           startIcon={<UploadFile />} variant="outlined">
             Export
           </Button>
         </div>
@@ -68,44 +111,56 @@ const Batch = () => {
         <div className="w-full md:w-[320px]">
 
           <TextField
-      fullWidth
-      size="small"
-      placeholder="Search..."
-      slotProps={{
-        input: {
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon />
-            </InputAdornment>
-          ),
-        },
-      }}
-    />
+              fullWidth
+              size="small"
+              placeholder="Search Batches..."
+              value={searchInput}                    // ← controlled by immediate input
+              onChange={handleSearchChange}
+              sx={{ "& .MuiInputBase-root": { height: 40 } }}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchCodeIcon size={17} />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
 
         </div>
 
       </div>
-  <TableContainer sx={{ maxHeight: 600 }}>
+  <TableContainer
+  sx={{
+    mt: 2,
+    flex: 1,
+    minHeight: 0,
+    height: "calc(100vh - 70px - 48px - 52px - 16px - 48px - 40px - 16px - 53px)",
+    overflowY: "auto",
+  }}
+>
     <Table stickyHeader>
       <TableHead>
         <TableRow>
           <TableCell>Batch</TableCell>
           <TableCell>Teacher</TableCell>
-          <TableCell align="right">Students</TableCell>
+          <TableCell >Students</TableCell>
           <TableCell>Status</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        {rows.map((row) => (
-          <TableRow key={row.name} hover>
-            <TableCell sx={{ fontWeight: 600 }}>{row.name}</TableCell>
-            <TableCell>{row.teacher}</TableCell>
-            <TableCell align="right">{row.students}</TableCell>
+       
+        {batches?.map((batch) => (
+          <TableRow key={batch?.name ?? ""} hover>
+            <TableCell sx={{ fontWeight: 600 }}>{batch?.name ?? ""}</TableCell>
+            <TableCell>{batch?.teachers ?? ""}</TableCell>
+            <TableCell >{batch?.totalStudents}</TableCell>
             <TableCell>
               <Chip
                 size="small"
-                label={row.status}
-                color={row.status === "Active" ? "success" : "warning"}
+                label={batch?.status}
+                color={batch?.status === "Active" ? "success" : "warning"}
                 variant="outlined"
               />
             </TableCell>
@@ -115,15 +170,26 @@ const Batch = () => {
     </Table>
   </TableContainer>
 
-  <TablePagination
+ <TablePagination
+    count={data?.totalItems ?? 0}
+    page={filter.pageNumber}
+    rowsPerPage={filter.pageSize}
     rowsPerPageOptions={[10, 25, 50]}
-    component="div"
-    count={10}
-    rowsPerPage={10}
-    page={0}
-    onPageChange={()=>""}
-    onRowsPerPageChange={() =>""}
-  />
+    onPageChange={(_, newPage) => {
+        setFilter(prev => ({
+            ...prev,
+            pageNumber: newPage,
+        }));
+    }}
+    onRowsPerPageChange={(event) => {
+        setFilter(prev => ({
+            ...prev,
+            pageSize: Number(event.target.value),
+            pageNumber: 0,
+        }));
+    }}
+/>    
+</Paper>
   <BatchForm open = {modal.type === "AddBatch"} type="Add" batchId={null} closeModal={() => setModal({type: null , params:{batchId : ""}})} />
 </div>
 

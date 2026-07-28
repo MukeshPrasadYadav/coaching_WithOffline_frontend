@@ -8,6 +8,8 @@ import './index.css';
 import { useThemeStore } from './store/theme.store.ts';
 import { createAppTheme } from './theme.ts';
 import AuthProvider from './store/AuthProvider.tsx';
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,11 +42,11 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-
-        <AuthProvider>
-          <App />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <AuthProvider>
+            <App />
           </AuthProvider>
-        
+        </LocalizationProvider>
       </ThemeProvider>
     </QueryClientProvider>
   </StrictMode>,

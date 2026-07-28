@@ -20,6 +20,21 @@ export const useAddStudent = (closeModal: () => void) => {
     });
 };
 
+
+export const useCompleteStudentProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: StudentService.completeProfile,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["user"],
+      });
+    },
+  });
+};
+
 export const useGetStudents = (params: StudentFilter) => {
   return useQuery({
     queryKey: ["students", params],

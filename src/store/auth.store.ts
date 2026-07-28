@@ -10,6 +10,12 @@ export const Role = {
   PARENT: "PARENT",
 } as const;
 
+export const Gender = {
+  MALE : "MALE",
+  FEMALE : "FEMALE",
+  OTHERS : "OTHERS"
+} as const;
+
 export const Permission = {
   ADD_STUDENT: "ADD_STUDENT",
   REMOVE_STUDENT: "REMOVE_STUDENT",
@@ -29,6 +35,8 @@ export const Permission = {
 
 export type Role = (typeof Role)[keyof typeof Role];
 export type Permission = (typeof Permission)[keyof typeof Permission];
+export type Gender = (typeof Gender)[keyof typeof Gender];
+
 
 export interface User {
   id: string;
@@ -38,6 +46,7 @@ export interface User {
   role: Role;
   address :Address;
   isProfileCompleted : boolean;
+  gender : Gender | null;
 }
 
 interface AuthState {

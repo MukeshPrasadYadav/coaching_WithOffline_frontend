@@ -1,20 +1,33 @@
 // src/services/StudentService.ts
 
 import { api, toPageResponse, type PageResponse } from "../api/Client";
+import type { Gender } from "../store/auth.store";
 import type { Address } from "../store/coaching.store";
 
+export interface BatchRecord{
+    id: string;
+    batchName :string;
+}
 export interface Student{
     id ? : string;
     name : string;
     email : string;
     contactNumber : string;
-    parentName : string;
-    parentNumber : string;
-    parentEmail ? : string;
     address : Address;
-    class_std : string;
-    batch : string;
+    batches : BatchRecord[];
 }
+
+export type CompleteStudentProfile = Omit<Student, "batches"> & {
+  dob: string;
+  gender: Gender | null;
+  fatherName: string;
+  motherName: string;
+  parentName: string;
+  parentPhone: string;
+  parentEmail?: string;
+};
+
+
 
 export interface StudentResponse{
     id : string;
@@ -54,6 +67,11 @@ const StudentService = {
     return toPageResponse<StudentResponse>(res.data.data)
 
     
+},
+
+completeProfile : async(request : CompleteStudentProfile) =>{
+    const res = await api.post("/students/completeProfile",request);
+    return res.data.data;
 },
 
 // Add this method
