@@ -6,11 +6,11 @@ import TeacherService, { type AppointTeacherFilter, type TeacherFilter } from ".
 
 
 
-export const useAddTeacher = () =>{
+export const useCompleteTeacherProfile = () =>{
     const setTeacher = useTeacherStore(state => state.setTeacher);
      const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: TeacherService.addTeacher,
+        mutationFn: TeacherService.completeProfile,
         onSuccess: (data) =>{
           console.log("data after adding coaching",data)
             setTeacher(data);

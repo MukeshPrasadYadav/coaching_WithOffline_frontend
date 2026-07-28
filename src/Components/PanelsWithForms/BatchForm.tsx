@@ -286,28 +286,28 @@ const BatchForm = ({ open, closeModal, batchId }: BatchFormProps) => {
             {/* Subjects */}
             <Grid size={12}>
               <Autocomplete
-                multiple
-                options={filteredSubjects}
-                getOptionLabel={(option) => option}
-                value={values.subjects}
-                onChange={(_, value) => {
-                  setFieldValue("subjects", value);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="standard"
-                    label="Subjects"
-                    error={Boolean(
-                      touched.subjects && errors.subjects
-                    )}
-                    helperText={
-                      touched.subjects &&
-                      (errors.subjects as string)
-                    }
-                  />
-                )}
-              />
+  multiple
+  freeSolo
+  options={filteredSubjects}
+  value={values.subjects}
+  onChange={(_, value) => {
+    setFieldValue("subjects", value);
+  }}
+  filterSelectedOptions
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      variant="standard"
+      label="Subjects"
+      placeholder="Select or type a subject"
+      error={Boolean(touched.subjects && errors.subjects)}
+      helperText={
+        touched.subjects && (errors.subjects as string)
+      }
+    />
+  )}
+/>
+            
             </Grid>
 
             <Grid size={12}>
