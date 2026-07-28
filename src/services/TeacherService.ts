@@ -43,6 +43,12 @@ export interface TeacherResponse{
     joiningDate : string;
 
 }
+export interface AppointTeacherFilter{
+    search : string;
+    degrees: string;
+    experience: string;
+    subjects:string;
+}
 
 const TeacherService ={
 
@@ -88,7 +94,13 @@ const TeacherService ={
     },
 
     getTeacherByCoachng : async (coachigId : string) =>{
-        const res = await api.get(`teacher/${coachigId}`);
+        const res = await api.get(`teacher/coaching/${coachigId}`);
+        return res.data.data;
+    },
+
+    getAllTeacherForAppointment : async (params : AppointTeacherFilter) => {
+        const res = await api.get(`teacher/appoint`,{params});
+        console.log("teachers",res.data)
         return res.data.data;
     }
 }

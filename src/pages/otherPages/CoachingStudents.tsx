@@ -48,13 +48,11 @@ useEffect(() => {
 
 
 const { data, isLoading, error, refetch } = useGetStudents(filter);
-const {download } = useExportStudents(filter);
-        const user = useAuthStore((state) => state.user);
+const user = useAuthStore((state) => state.user);
 
  
 
 
-console.log("data in student page",data)
       
       
     
@@ -156,7 +154,6 @@ console.log("data in student page",data)
             <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
-              <TableCell>Class</TableCell>
               <TableCell>Batch</TableCell>
               <TableCell>Joining Date</TableCell>
             </TableRow>
@@ -181,8 +178,7 @@ console.log("data in student page",data)
               {!isLoading && !error && students.map((student) => (
                 <TableRow key={student.id} hover>
                     <TableCell>{student.name}</TableCell>
-                    <TableCell>{student.class_std}</TableCell>
-                    <TableCell>{student.batch}</TableCell>
+                    <TableCell>  {student?.batches?.map(batch => batch.batchName).join(", ")}</TableCell>
                     <TableCell>
                         {student.joiningDate ? new Date(student.joiningDate).toLocaleDateString() : "-"}
                     </TableCell>

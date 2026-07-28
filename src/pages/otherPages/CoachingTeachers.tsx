@@ -6,7 +6,7 @@ import { SearchIcon } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { Role, useAuthStore } from '../../store/auth.store'
 import { useDebounce } from '../../hooks/debounce'
-import type { StudentFilter } from '../../services/StudentService'
+import type { BatchRecord, StudentFilter } from '../../services/StudentService'
 import TeacherForm from '../../Components/PanelsWithForms/ManageTeacher'
 import { useExportTeachers, useGetTeachers } from '../../hooks/teacher.hooks'
 import type { TeacherFilter } from '../../services/TeacherService'
@@ -29,7 +29,7 @@ export interface Teacher{
     email ?: string;
     degrees ?: string[];
     experience ?: number | '';
-    batches?: string[];
+    batches?: BatchRecord[];
     subjects ?: string[];
 }
 
@@ -132,7 +132,7 @@ const CoachingTeachers = () => {
             <TextField
               fullWidth
               size="small"
-              placeholder="Search students..."
+              placeholder="Search teachers..."
               value={searchInput}                    // ← controlled by immediate input
               onChange={handleSearchChange}
               sx={{ "& .MuiInputBase-root": { height: 40 } }}
@@ -186,10 +186,10 @@ const CoachingTeachers = () => {
                )} 
 
               {!isLoading && !error && teachers.map((teacher) => (
-                <TableRow key={teacher.id} hover>
-                    <TableCell>{teacher.name}</TableCell>
-                    <TableCell>{teacher.batches}</TableCell>
-                    <TableCell>{teacher.experience}</TableCell>
+                <TableRow key={teacher?.id ?? ""}  hover>
+                    <TableCell>{teacher?.name ?? ""}</TableCell>
+                    <TableCell>{teacher?.batches?.map(batch => batch.batchName).join(", ")}</TableCell>
+                    <TableCell>{teacher?.experience ?? ""}</TableCell>
                     <TableCell>
                         {teacher.joiningDate ? new Date(teacher.joiningDate).toLocaleDateString() : "-"}
                     </TableCell>

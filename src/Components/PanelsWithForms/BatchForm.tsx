@@ -1,49 +1,17 @@
 // src/Components/PanelsWithForms/BatchForm.tsx
-
-import { Autocomplete, Button, Divider, Grid, Paper, Stack, TextField, Typography } from '@mui/material';
-import { Form, Formik } from 'formik';
-import CustomDrawer from '../ui/CustomDrawer';
+import { Autocomplete, Button, Grid, Stack, TextField } from "@mui/material";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import { useCoachingStore } from '../../store/coaching.store';
+import CustomDrawer from "../ui/CustomDrawer";
+import { useGetTeacherByCoaching } from "../../hooks/teacher.hooks";
+import { useCoachingStore, type Coaching } from "../../store/coaching.store";
+import { useAddBatch } from "../../hooks/batch.hooks";
+import { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
-export const DaysOfWeek = {
-  MONDAY: "MONDAY",
-  TUESDAY: "TUESDAY",
-  WEDNESDAY: "WEDNESDAY",
-  THURSDAY: "THURSDAY",
-  FRIDAY: "FRIDAY",
-  SATURDAY: "SATURDAY",
-  SUNDAY: "SUNDAY",
-} as const;
-
-export interface TeacherInfo{
-    id : string | null,
-    name : string | null,
-    subjects : string[] | []
-    experience : number 
-}
-
-export type DaysOfWeek = typeof DaysOfWeek[keyof typeof DaysOfWeek];
-
-interface BatchFormValues {
-    name: string;
-
-    classRoomId: string;
-
-    teacherId: string;
-
-    subjectId: string;
-
-    fee: number;
-
-    days: DaysOfWeek[];
-
-    timing: {
-        startTime: string;
-        endTime: string;
-    };
-}
 type FormType = "Add" | "Update";
+
 interface BatchFormProps {
   type: FormType;
   open: boolean;
@@ -51,15 +19,80 @@ interface BatchFormProps {
   closeModal: () => void;
 }
 
-const schema = Yup.object({});
+export interface AddBatchRequest {
+  name: string;
+  startDate: string;
+  endDate: string;
+  fee: number | "";
+  teachers: number[];
+  subjects: number[];
+  startTime: Dayjs | null;
+  endTime : Dayjs | null;
+  description: string;
+}
 
+const initialValues: AddBatchRequest = {
+  name: "",
+  startDate: "",
+  endDate: "",
+  startTime : null,
+  endTime : null,
+  fee: "",
+  teachers: [],
+  subjects: [],
+  description: "",
+};
 
+const batchValidationSchema = Yup.object({
+  name: Yup.string()
+    .trim()
+    .required("Batch name is required")
+    .max(100),
+
+  startDate: Yup.date()
+    .required("Start date is required"),
+
+  endDate: Yup.date()
+    .required("End date is required")
+    .min(
+      Yup.ref("startDate"),
+      "End date must be after start date"
+    ),
+
+    startTime : Yup.date()
+    .required("start timing is required"),
+
+    endTime : Yup.date()
+    .required("Ending time is required")
+    .min(
+      Yup.ref("startTime")
+    ),
+
+    
+
+  fee: Yup.number()
+    .typeError("Fee is required")
+    .positive("Fee must be greater than 0")
+    .required("Fee is required"),
+
+  teachers: Yup.array()
+    .min(1, "Select at least one teacher"),
+
+  subjects: Yup.array(),
+
+  description: Yup.string()
+    .trim()
+    .max(500),
+});
 
 const BatchForm = ({ open, closeModal, batchId }: BatchFormProps) => {
+  const coaching: Coaching = useCoachingStore((state) => state.coaching);
 
-    const coaching = useCoachingStore((state) => state.coaching);
-    const teachers = coaching?.teachers ?? [];
-    console.log("coachingId",coaching)
+  const { data, isPending } = useGetTeacherByCoaching(coaching?.id);
+  const {mutate : addBatch} = useAddBatch(closeModal);
+  console.log("teachers",data)
+  const teachers: any[] = data ?? [];
+
   return (
     <CustomDrawer
     open={open}
@@ -67,338 +100,263 @@ const BatchForm = ({ open, closeModal, batchId }: BatchFormProps) => {
     title={batchId ? "Update Batch" : "Add Batch"}
     size="lg"
     anchor="right"
->
+  >
     <Formik
-        initialValues={{
-  name: "",
-  fee: "",
+  initialValues={initialValues}
+  validationSchema={batchValidationSchema}
+  onSubmit={(values) => {
 
-  classRoomId: "",
-
-  teacherId: "",
-
-  subject: "",
-
-  days: [],
-
-  timing: null,
-}}
-        validationSchema={schema}
-        onSubmit={(values) => {
-            console.log(values);
-        }}
-    >
-        {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            setFieldValue,
-        }) => (
-            <Form>
-                <Stack spacing={4}>
-
-                    {/* ========================= */}
-                    {/* Batch Information */}
-                    {/* ========================= */}
-
-                    <Grid container spacing={3}>
-
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <TextField
-                                fullWidth
-                                variant="standard"
-                                label="Batch Name"
-                                name="name"
-                                value={values.name}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                error={Boolean(touched.name && errors.name)}
-                                helperText={touched.name && errors.name}
-                            />
-                        </Grid>
-
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <TextField
-                                fullWidth
-                                type="number"
-                                variant="standard"
-                                label="Monthly Fee"
-                                name="fee"
-                                value={values.fee}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                error={Boolean(touched.fee && errors.fee)}
-                                helperText={touched.fee && errors.fee}
-                            />
-                        </Grid>
-
-                    </Grid>
-
-                    <Divider />
-
-                    {/* ========================= */}
-                    {/* Classroom */}
-                    {/* ========================= */}
-
-                    <Grid container spacing={3}>
-
-                        <Grid size={12}>
-
-                            <Autocomplete
-                                options={["A1","B1"]}
-                                value={null}
-                                onChange={(_, value) => {
-                                    setFieldValue("classRoom", value);
-                                }}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Select Classroom"
-                                    />
-                                )}
-                            />
-
-                        </Grid>
-
-                    </Grid>
-
-                    <Divider />
-
-                    {/* ========================= */}
-                    {/* Teacher */}
-                    {/* ========================= */}
-
-                    <Grid container spacing={3}>
-
-                        <Grid size={12}>
-
-                           <Autocomplete
-  options={teachers}
-  getOptionLabel={(option) => option.name}
-  isOptionEqualToValue={(option, value) => option.id === value.id}
-  value={teachers.find((t) => t.id === values.teacherId) ?? null}
-  onChange={(_, value) => {
-    setFieldValue("teacherId", value?.id ?? "");
-    if(value?.id){
-        // api call to get teacher
-    }
-
+    addBatch({coachingId : coaching?.id , request : {
+      ...values,
+        startTime: dayjs(values?.startTime).format("HH:mm:ss") ?? null,
+      endTime: dayjs(values?.endTime).format("HH:mm:ss") ?? null,
+    }})
   }}
-  renderInput={(params) => (
-    <TextField
-      {...params}
-      label="Select Teacher"
-    />
-  )}
+>
+  {({
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    setFieldValue,
+  }) => {
+
+    const allSubjects = [
+      ...new Set(
+        teachers.flatMap((teacher) => teacher.subjects)
+      ),
+    ];
+
+    const filteredSubjects =
+      values.teachers.length === 0
+        ? allSubjects
+        : [
+            ...new Set(
+              teachers
+                .filter((teacher) =>
+                  values.teachers.includes(teacher.id)
+                )
+                .flatMap((teacher) => teacher.subjects)
+            ),
+          ];
+
+    const filteredTeachers =
+      values.subjects.length === 0
+        ? teachers
+        : teachers.filter((teacher) =>
+            values.subjects.every((subject) =>
+              teacher.subjects.includes(subject)
+            )
+          );
+
+    return (
+      <Form>
+        <Stack spacing={3}>
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField
+                fullWidth
+                variant="standard"
+                label="Batch Name"
+                name="name"
+                value={values.name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={Boolean(touched.name && errors.name)}
+                helperText={touched.name && errors.name}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField
+                fullWidth
+                variant="standard"
+                label="Fee"
+                name="fee"
+                type="number"
+                value={values.fee}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={Boolean(touched.fee && errors.fee)}
+                helperText={touched.fee && errors.fee}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField
+                fullWidth
+                variant="standard"
+                label="Start Date"
+                name="startDate"
+                type="date"
+                value={values.startDate}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={Boolean(
+                  touched.startDate && errors.startDate
+                )}
+                helperText={
+                  touched.startDate && errors.startDate
+                }
+                slotProps={{
+                  inputLabel: { shrink: true },
+                }}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField
+                fullWidth
+                variant="standard"
+                label="End Date"
+                name="endDate"
+                type="date"
+                value={values.endDate}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={Boolean(
+                  touched.endDate && errors.endDate
+                )}
+                helperText={
+                  touched.endDate && errors.endDate
+                }
+                slotProps={{
+                  inputLabel: { shrink: true },
+                }}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 6 }}>
+                <TimePicker
+  label="Start time"
+  name ="startTime"
+  value={values.startTime}
+  onChange={(newValue) => setFieldValue("startTime",newValue)}
+/>
+</Grid>
+
+ <Grid size={{ xs: 12, md: 6 }} >
+                <TimePicker
+  label="End time"
+  name ="endTime"
+  value={values.endTime}
+  onChange={(newValue) => setFieldValue("endTime",newValue)}
 />
 
-                        </Grid>
 
-                    </Grid>
 
-                    {/* ========================= */}
-                    {/* Teacher Information */}
-                    {/* ========================= */}
-
-                   {
-                    values.teacherId && 
-                     <Paper
-                        variant="outlined"
-                        sx={{
-                            p: 2,
-                            borderRadius: 2
-                        }}
-                    >
-
-                        <Typography variant="h6">
-                            Teacher Information
-                        </Typography>
-
-                        <Stack spacing={1} mt={2}>
-
-                            <Typography>
-
-                                Name :
-
-                            </Typography>
-
-                            <Typography>
-
-                                Experience :
-
-                            </Typography>
-
-                            <Typography>
-
-                                Subjects :
-
-                            </Typography>
-
-                        </Stack>
-
-                    </Paper>
-                   }
-
-                    <Divider />
-
-                    {/* ========================= */}
-                    {/* Subject */}
-                    {/* ========================= */}
-
-                    <Grid container spacing={3}>
-
-                        <Grid size={12}>
-
-                            <Autocomplete
-                                options={[]}
-                                value={null}
-                                onChange={(_, value) => {
-
-                                    setFieldValue("subject", value);
-
-                                }}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Select Subject"
-                                    />
-                                )}
-                            />
-
-                        </Grid>
-
-                    </Grid>
-
-                    <Divider />
-
-                    {/* ========================= */}
-                    {/* Schedule */}
-                    {/* ========================= */}
-
-                    <Typography variant="h6">
-                        Batch Schedule
-                    </Typography>
-
-                    {/* Day Selector */}
-
-                    <Paper
-                        variant="outlined"
-                        sx={{
-                            p: 2,
-                            borderRadius: 2
-                        }}
-                    >
-
-                        {/* Checkbox Group */}
-
-                    </Paper>
-
-                    {/* Available Timings */}
-
-                    <Paper
-                        variant="outlined"
-                        sx={{
-                            p: 2,
-                            borderRadius: 2
-                        }}
-                    >
-
-                        {/* Radio Cards */}
-
-                    </Paper>
-
-                    <Divider />
-
-                    {/* ========================= */}
-                    {/* Summary */}
-                    {/* ========================= */}
-
-                    <Paper
-                        variant="outlined"
-                        sx={{
-                            p: 2,
-                            borderRadius: 2
-                        }}
-                    >
-
-                        <Typography variant="h6">
-                            Batch Summary
-                        </Typography>
-
-                        <Stack spacing={1} mt={2}>
-
-                            <Typography>
-
-                                Batch :
-
-                            </Typography>
-
-                            <Typography>
-
-                                Teacher :
-
-                            </Typography>
-
-                            <Typography>
-
-                                Subject :
-
-                            </Typography>
-
-                            <Typography>
-
-                                Classroom :
-
-                            </Typography>
-
-                            <Typography>
-
-                                Fee :
-
-                            </Typography>
-
-                            <Typography>
-
-                                Days :
-
-                            </Typography>
-
-                            <Typography>
-
-                                Timing :
-
-                            </Typography>
-
-                        </Stack>
-
-                    </Paper>
-
-                    <div className="flex justify-end gap-2">
-
-                        <Button
-                            variant="outlined"
-                            onClick={closeModal}
-                        >
-                            Cancel
-                        </Button>
-
-                        <Button
-                            variant="contained"
-                            type="submit"
-                        >
-                            {batchId ? "Update Batch" : "Add Batch"}
-                        </Button>
-
-                    </div>
-
-                </Stack>
-            </Form>
-        )}
-    </Formik>
-</CustomDrawer>
-  )
-}
-
-export default BatchForm
+            </Grid>
+
+            {/* Teachers */}
+            <Grid size={12}>
+              <Autocomplete
+                multiple
+                options={filteredTeachers}
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) =>
+                  option.id === value.id
+                }
+                value={filteredTeachers.filter((teacher) =>
+                  values.teachers.includes(teacher.id)
+                )}
+                onChange={(_, value) => {
+                  setFieldValue(
+                    "teachers",
+                    value.map((teacher) => teacher.id)
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    label="Teachers"
+                    error={Boolean(
+                      touched.teachers && errors.teachers
+                    )}
+                    helperText={
+                      touched.teachers &&
+                      (errors.teachers as string)
+                    }
+                  />
+                )}
+              />
+            </Grid>
+
+            {/* Subjects */}
+            <Grid size={12}>
+              <Autocomplete
+                multiple
+                options={filteredSubjects}
+                getOptionLabel={(option) => option}
+                value={values.subjects}
+                onChange={(_, value) => {
+                  setFieldValue("subjects", value);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    label="Subjects"
+                    error={Boolean(
+                      touched.subjects && errors.subjects
+                    )}
+                    helperText={
+                      touched.subjects &&
+                      (errors.subjects as string)
+                    }
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid size={12}>
+              <TextField
+                fullWidth
+                multiline
+                minRows={4}
+                variant="standard"
+                label="Description"
+                name="description"
+                value={values.description}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={Boolean(
+                  touched.description &&
+                    errors.description
+                )}
+                helperText={
+                  touched.description &&
+                  errors.description
+                }
+              />
+            </Grid>
+          </Grid>
+
+          <div className="flex justify-end gap-2">
+            <Button
+            disabled = {isPending}
+              variant="outlined"
+              onClick={closeModal}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              disabled = {isPending}
+              variant="contained"
+              type="submit"
+            >
+              {batchId ? "Update Batch" : "Add Batch"}
+            </Button>
+          </div>
+        </Stack>
+      </Form>
+    );
+  }}
+</Formik>
+  </CustomDrawer>
+  );
+};
+
+export default BatchForm;

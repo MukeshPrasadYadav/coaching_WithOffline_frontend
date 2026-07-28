@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTeacherStore } from "../store/teacher.store";
-import TeacherService, { type TeacherFilter } from "../services/TeacherService";
+import TeacherService, { type AppointTeacherFilter, type TeacherFilter } from "../services/TeacherService";
 
 
 
@@ -38,6 +38,16 @@ export const useGetTeachers = (params: TeacherFilter) => {
   return useQuery({
     queryKey: ["teachers", params],
     queryFn: () => TeacherService.getTeacher(params),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    retry: 1,
+  });
+};
+
+export const useGetTeacherAppoint = (params : AppointTeacherFilter) =>{
+  return useQuery({
+    queryKey: ["teachers", params],
+    queryFn: () => TeacherService.getAllTeacherForAppointment(params),
     staleTime: 10 * 60 * 1000,
     gcTime: 15 * 60 * 1000,
     retry: 1,

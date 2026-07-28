@@ -5,6 +5,7 @@ import type { Address } from '../../store/coaching.store';
 import * as Yup from "yup"
 import { useAddTeacherByAdmin } from '../../hooks/teacher.hooks';
 import { useState } from 'react';
+import { useGetBatchForEnroll } from '../../hooks/batch.hooks';
 
 const commonSubjects = ["Mathematics", "Physics", "Chemistry", "Biology", "English", "History", "Computer Science"];
 const commonBatches = ["Morning", "Evening", "Weekend"];
@@ -68,8 +69,8 @@ const schema = Yup.object({
     .max(50, "Experience seems too high")
     .required("Experience is required"),
 
-  degrees: Yup.array().of(Yup.string()).min(1, "At least one degree is required"),
-  subjects: Yup.array().of(Yup.string()).min(1, "At least one subject is required"),
+  degrees: Yup.array().of(Yup.string()),
+  subjects: Yup.array().of(Yup.string()),
   batches: Yup.array().of(Yup.string()),
 
   address: addressSchema,
@@ -96,6 +97,8 @@ const AddTeacherForm = ({closeModal} : AddTeacherFormProps) => {
     const [newDegree, setNewDegree] = useState("");
       const [newSubject, setNewSubject] = ("");
       const {mutate: addTeacher,isPending} = useAddTeacherByAdmin(closeModal);
+          const {data: batches } = useGetBatchForEnroll();
+      
 
   return (
     <Formik
@@ -103,7 +106,8 @@ const AddTeacherForm = ({closeModal} : AddTeacherFormProps) => {
         initialValues={initialValues}
         validationSchema={schema}
         onSubmit={(values) => {
-          
+          console.log("submit button")
+          console.log("values of teacher",values)
            addTeacher(values,{
             onSuccess : () => closeModal()
            });
@@ -218,7 +222,7 @@ const AddTeacherForm = ({closeModal} : AddTeacherFormProps) => {
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="body2" gutterBottom>Subjects</Typography>
-                  <Autocomplete
+                  {/* <Autocomplete
                     multiple
                     options={commonSubjects}
                     value={values.subjects}
@@ -229,7 +233,23 @@ const AddTeacherForm = ({closeModal} : AddTeacherFormProps) => {
                         label="Select Subjects"
                         error={Boolean(touched.subjects && errors.subjects)}
                         helperText={touched.subjects && errors.subjects}
-                      />
+                      /> */}
+                      <Autocomplete
+  options={batches ?? []}
+  getOptionLabel={(option) => option.subjects}
+  value={batches?.find((batch) => batch.id === values.batches) ?? null}
+  onChange={(_, value) => {
+    setFieldValue("batch", value?.id ?? "");
+  }}
+  isOptionEqualToValue={(option, value) => option.id === value.id}
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      label="Batch"
+      variant="standard"
+      error={Boolean(touched.batches && errors.batches)}
+      helperText={touched.batches && errors.batches}
+    />
                     )}
                   />
                 </Grid>
@@ -237,14 +257,24 @@ const AddTeacherForm = ({closeModal} : AddTeacherFormProps) => {
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="body2" gutterBottom>Batches</Typography>
                   <Autocomplete
-                    multiple
-                    options={commonBatches}
-                    value={values.batches}
-                    onChange={(_, newValue) => setFieldValue("batches", newValue)}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Select Batches" />
-                    )}
-                  />
+  options={batches ?? []}
+  getOptionLabel={(option) => option.name}
+  value={batches?.find((batch) => batch.id === values.batches) ?? null}
+  onChange={(_, value) => {
+    setFieldValue("batch", value?.id ?? "");
+  }}
+  isOptionEqualToValue={(option, value) => option.id === value.id}
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      label="Batch"
+      variant="standard"
+      error={Boolean(touched.batches && errors.batches)}
+      helperText={touched.batches && errors.batches}
+    />
+  )}
+/>
+    
                 </Grid>
               </Grid>
 
@@ -286,7 +316,9 @@ const AddTeacherForm = ({closeModal} : AddTeacherFormProps) => {
                 <Button  disabled = {isPending} variant="outlined" onClick={closeModal}>
                   Cancel
                 </Button>
-                <Button  disabled = {isPending} variant="contained" type="submit">
+                <Button 
+                onClick={() => console.log("button clicking")}
+                 disabled = {isPending} variant="contained" type="submit">
                   {isPending ? "Adding teacher" : "Add teacher"}
                 </Button>
               </div>
