@@ -1,55 +1,33 @@
 // src/pages/teacher/AddTeacherForm.tsx
-import { Autocomplete, Button, Chip, Divider, Grid, Stack, TextField, Typography } from '@mui/material';
-import { Form, Formik, getIn } from 'formik';
-import type { Address } from '../../store/coaching.store';
+import { Autocomplete, Button, Divider, Grid, Stack, TextField, Typography } from '@mui/material';
+import { Form, Formik } from 'formik';
+
 import * as Yup from "yup"
 import { useAddTeacherByAdmin } from '../../hooks/teacher.hooks';
-import { useState } from 'react';
+
 import { useGetBatchForEnroll } from '../../hooks/batch.hooks';
 
-const commonSubjects = ["Mathematics", "Physics", "Chemistry", "Biology", "English", "History", "Computer Science"];
-const commonBatches = ["Morning", "Evening", "Weekend"];
-const commonDegrees = ["B.Ed", "M.Sc", "B.Sc", "MA", "PhD", "B.A", "M.Ed"];
 
 export interface TeacherFormValues {
   name: string;
   contactNumber: string;
   email: string;
-  address: Address;
-  degrees: string[];
-  experience: number | '';
   batches: string[];
   subjects: string[];
-}
+ experience: number | '';}
 
-const emptyAddress: Address = {
-  country: "", state: "", city: "", area: "", pinCode: "",
-  postOffice: "", building: "", houseNo: ""
-};
+
 
 const initialValues: TeacherFormValues = {
   name: "",
   contactNumber: "",
   email: "",
-  address: { ...emptyAddress },
-  degrees: [],
-  experience: '',
   batches: [],
   subjects: [],
+  experience : ""
 };
 
-const addressSchema = Yup.object({
-  country: Yup.string().required("Country is required"),
-  state: Yup.string().required("State is required"),
-  city: Yup.string().required("City is required"),
-  area: Yup.string().required("Area is required"),
-  pinCode: Yup.string()
-    .matches(/^\d{6}$/, "Pincode must be 6 digits")
-    .required("Pincode is required"),
-  postOffice: Yup.string(),
-  building: Yup.string(),
-  houseNo: Yup.string(),
-});
+
 
 const schema = Yup.object({
   name: Yup.string()
@@ -64,29 +42,15 @@ const schema = Yup.object({
     .email("Invalid email")
     .required("Email is required"),
 
-  experience: Yup.number()
+  subjects: Yup.array().of(Yup.string()),
+  batches: Yup.array().of(Yup.string()),
+ experience: Yup.number()
     .min(0, "Experience cannot be negative")
     .max(50, "Experience seems too high")
     .required("Experience is required"),
-
-  degrees: Yup.array().of(Yup.string()),
-  subjects: Yup.array().of(Yup.string()),
-  batches: Yup.array().of(Yup.string()),
-
-  address: addressSchema,
 });
 
 
-const addressFields: Array<{ name: keyof Address; label: string }> = [
-  { name: "country", label: "Country" },
-  { name: "state", label: "State" },
-  { name: "city", label: "City" },
-  { name: "area", label: "Area" },
-  { name: "pinCode", label: "Pin Code" },
-  { name: "postOffice", label: "Post Office" },
-  { name: "building", label: "Building" },
-  { name: "houseNo", label: "House No." },
-];
 
 interface AddTeacherFormProps{
       closeModal: () => void;
@@ -94,10 +58,14 @@ interface AddTeacherFormProps{
 }
 
 const AddTeacherForm = ({closeModal} : AddTeacherFormProps) => {
-    const [newDegree, setNewDegree] = useState("");
-      const [newSubject, setNewSubject] = ("");
       const {mutate: addTeacher,isPending} = useAddTeacherByAdmin(closeModal);
           const {data: batches } = useGetBatchForEnroll();
+
+          const subjectOptions = [
+  ...new Set(
+    (batches ?? []).flatMap((batch) => batch.subjects)
+  ),
+];
       
 
   return (
@@ -146,7 +114,7 @@ const AddTeacherForm = ({closeModal} : AddTeacherFormProps) => {
                   />
                 </Grid>
 
-                <Grid size={12}>
+                <Grid size={{xs : 12, md : 6}}>
                   <TextField
                     fullWidth
                     variant="standard"
@@ -160,13 +128,7 @@ const AddTeacherForm = ({closeModal} : AddTeacherFormProps) => {
                     helperText={touched.email && errors.email}
                   />
                 </Grid>
-              </Grid>
-
-              <Divider />
-
-              {/* Experience & Degrees */}
-              <Grid container spacing={3}>
-                <Grid size={{ xs: 12, md: 6 }}>
+                 <Grid size={{ xs: 12, md: 6 }}>
                   <TextField
                     fullWidth
                     variant="standard"
@@ -180,136 +142,62 @@ const AddTeacherForm = ({closeModal} : AddTeacherFormProps) => {
                     helperText={touched.experience && errors.experience}
                   />
                 </Grid>
-
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="body2" gutterBottom>Degrees</Typography>
-                  <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                    {values.degrees.map((deg, index) => (
-                      <Chip
-                        key={index}
-                        label={deg}
-                        onDelete={() => setFieldValue('degrees', values.degrees.filter((_, i) => i !== index))}
-                      />
-                    ))}
-                  </Stack>
-                  <div className='flex flex-row gap-1 mt-1'>
-                    <TextField
-                      size="small"
-                      label="Add Degree"
-                      value={newDegree}
-                      onChange={(e) => setNewDegree(e.target.value)}
-                    />
-                    <Button
-                    disabled = {isPending}
-                      variant="outlined"
-                      size="small"
-                      onClick={() => {
-                        if (newDegree.trim()) {
-                          setFieldValue('degrees', [...values.degrees, newDegree.trim()]);
-                          setNewDegree("");
-                        }
-                      }}
-                    >
-                      Add
-                    </Button>
-                  </div>
-                </Grid>
               </Grid>
 
               <Divider />
+
+              {/* Experience & Degrees */}
+              
 
               {/* Subjects & Batches */}
               <Grid container spacing={3}>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="body2" gutterBottom>Subjects</Typography>
-                  {/* <Autocomplete
-                    multiple
-                    options={commonSubjects}
-                    value={values.subjects}
-                    onChange={(_, newValue) => setFieldValue("subjects", newValue)}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Select Subjects"
-                        error={Boolean(touched.subjects && errors.subjects)}
-                        helperText={touched.subjects && errors.subjects}
-                      /> */}
-                      <Autocomplete
-  options={batches ?? []}
-  getOptionLabel={(option) => option.subjects}
-  value={batches?.find((batch) => batch.id === values.batches) ?? null}
+  {/* Subject */}
+  <Grid size={{ xs: 12, md: 6 }}>
+    <Autocomplete
+  multiple
+  freeSolo
+  options={subjectOptions}
+  value={values.subjects}
   onChange={(_, value) => {
-    setFieldValue("batch", value?.id ?? "");
+    setFieldValue("subjects", value);
   }}
-  isOptionEqualToValue={(option, value) => option.id === value.id}
+  filterSelectedOptions
   renderInput={(params) => (
     <TextField
       {...params}
-      label="Batch"
-      variant="standard"
-      error={Boolean(touched.batches && errors.batches)}
-      helperText={touched.batches && errors.batches}
-    />
-                    )}
-                  />
-                </Grid>
-
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="body2" gutterBottom>Batches</Typography>
-                  <Autocomplete
-  options={batches ?? []}
-  getOptionLabel={(option) => option.name}
-  value={batches?.find((batch) => batch.id === values.batches) ?? null}
-  onChange={(_, value) => {
-    setFieldValue("batch", value?.id ?? "");
-  }}
-  isOptionEqualToValue={(option, value) => option.id === value.id}
-  renderInput={(params) => (
-    <TextField
-      {...params}
-      label="Batch"
-      variant="standard"
-      error={Boolean(touched.batches && errors.batches)}
-      helperText={touched.batches && errors.batches}
+      label="Subjects"
+      error={Boolean(touched.subjects && errors.subjects)}
+      helperText={touched.subjects && (errors.subjects as string)}
     />
   )}
 />
-    
-                </Grid>
-              </Grid>
+  </Grid>
+
+  {/* Batch */}
+  <Grid size={{ xs: 12, md: 6 }}>
+    <Autocomplete
+      options={batches ?? []}
+      getOptionLabel={(option) => option.name}
+      value={batches?.find((batch) => batch.id === values.batch) ?? null}
+      onChange={(_, value) => {
+        setFieldValue("batch", value?.id ?? "");
+      }}
+      isOptionEqualToValue={(option, value) => option.id === value.id}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label="Batch"
+          error={Boolean(touched.batch && errors.batch)}
+          helperText={touched.batch && errors.batch}
+        />
+      )}
+    />
+  </Grid>
+</Grid>
 
               <Divider />
 
-              {/* Address Section */}
-              <Stack spacing={2}>
-                <Typography variant="h6">Address</Typography>
-                <Grid container spacing={2}>
-                  {addressFields.map((field) => {
-                    const fieldName = `address.${field.name}`;
-                    const fieldError = getIn(errors, fieldName);
-                    const fieldTouched = getIn(touched, fieldName);
-
-                    return (
-                      <Grid size={{ xs: 12, sm: 6, md: 3 }} key={fieldName}>
-                        <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 0.5 }}>
-                          {field.label}
-                        </Typography>
-                        <TextField
-                          fullWidth
-                          size="small"
-                          variant="standard"
-                          name={fieldName}
-                          value={values.address[field.name]}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          error={Boolean(fieldTouched && fieldError)}
-                          helperText={fieldTouched && fieldError}
-                        />
-                      </Grid>
-                    );
-                  })}
-                </Grid>
-              </Stack>
+              
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-2 justify-end mt-4">

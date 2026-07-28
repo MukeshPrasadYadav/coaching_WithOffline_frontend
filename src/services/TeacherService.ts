@@ -1,27 +1,22 @@
 // src/services/TeacherService.ts
 import { api, toPageResponse, type PageResponse } from '../api/Client';
+import type { Gender } from '../store/auth.store';
+import type { Address } from '../store/coaching.store';
 
 
-export interface TeacherRegisterRequest{
+export interface CompleteTeacherProfile{
       name: string;
      email: string;
   contactNumber: string;
+  gender: Gender | null;
 
-  address: {
-    country: string;
-    state: string;
-    area: string;
-    city: string;
-    pinCode: string;
-    postOffice: string;
-    building: string;
-    houseNo: string;
-  };
+  address: Address;
   fee ? : number;
   subjects ? : string [];
   degrees ?: string[];
   batches ?: string[];
-  experience ?: number
+  experience ?: number,
+  dob : string;
 
 }
 
@@ -52,8 +47,8 @@ export interface AppointTeacherFilter{
 
 const TeacherService ={
 
-    addTeacher : async (request : TeacherRegisterRequest) =>{
-        const res = await api.post("/teacher",request);
+    completeProfile : async (request : CompleteTeacherProfile) =>{
+        const res = await api.post("/teacher/completeProfile",request);
         return res.data;
     },
 
@@ -63,7 +58,7 @@ const TeacherService ={
     },
 
     addTeacherByAdmin : async (request : TeacherRegisterRequest) =>{
-        const res = await api.post("/teacher/addTeacher",request);
+        const res = await api.post("/teacher",request);
         return res.data.data;
     },
 
