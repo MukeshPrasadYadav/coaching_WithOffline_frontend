@@ -87,8 +87,9 @@ const schema = Yup.object({
 
   parentEmail: Yup.string()
     .trim()
-    .email("Enter a valid email")
-    ,
+    .email("Enter a valid email"),
+    
+  gender : Yup.string().required("Gender is required"),
 
   address: addressSchema,
 });
