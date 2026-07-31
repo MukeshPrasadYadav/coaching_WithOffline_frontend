@@ -1,3 +1,4 @@
+// src/types/dashboard.ts
 export type DashboardStatus = 'active' | 'completed' | 'upcoming' | 'cancelled';
 export type StatisticIconKey = 'classes' | 'students' | 'subjects' | 'earnings';
 

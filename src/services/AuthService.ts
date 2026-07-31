@@ -1,32 +1,30 @@
 // src/services/AuthService.ts
-import type { Role } from '../store/auth.store';
-import { api } from '../api/Client';
+// src/services/AuthService.ts
+import type { User, Role } from '../store/auth.store';
+import { get, post } from '../api/response.utility';
 
+export interface SignInRequest{
+    email : string;
+    password : string;
+}
 
+export interface SignUpReqest extends SignInRequest{
+    role : Role
+}
+
+const root = "auth";
 const AuthService = {
-    login: async (payload: { email: string; password: string }) => {
-        const response = await api.post('/auth/signin', payload);
-        return response.data;
-    },
+    
 
-    signup: async (payload: { name:string;  email: string; password: string,role: Role }) => {
-        const response = await api.post('/auth/signup', payload);
-        return response.data;
-    },
+    login: async(request : SignInRequest) => await post<SignInRequest,void>(`${root}/signin`, request),
 
-    refreshToken : async () => {
-        const response = await api.post('/auth/refresh');
-        return response.data;
-    },
+    signup: async (request : SignUpReqest ) => await post<SignUpReqest,void>(`${root}/signup`, request),
 
-    getCurrentUser: async () => {
-        const response = await api.get('/auth/get/me');
-        return response.data.data;
-    },
-    logout: async () => {
-        const response = await api.post('/auth/signout');
-        return response.data;
-    }
+    getCurrentUser: async () => await get<User>(`${root}/get/me`),
+
+    logout : async () => await post(`${root}/signout`),
+
+    refreshToken : async () => await post<void,void>(`${root}/refresh`)
 
 }
 

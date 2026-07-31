@@ -1,6 +1,5 @@
 // src/store/auth.store.ts
 import { create } from "zustand";
-import { api } from "../api/Client";
 import type { Address } from "./coaching.store";
 
 export const Role = {
@@ -16,25 +15,9 @@ export const Gender = {
   OTHERS : "OTHERS"
 } as const;
 
-export const Permission = {
-  ADD_STUDENT: "ADD_STUDENT",
-  REMOVE_STUDENT: "REMOVE_STUDENT",
-  ADD_PARENT: "ADD_PARENT",
-  REMOVE_PARENT: "REMOVE_PARENT",
-  PAY_FEE: "PAY_FEE",
-  ADD_TEACHER: "ADD_TEACHER",
-  REMOVE_TEACHER: "REMOVE_TEACHER",
-  ADD_BATCH: "ADD_BATCH",
-  REMOVE_BATCH: "REMOVE_BATCH",
-  UPDATE_BATCH: "UPDATE_BATCH",
-  ADD_COACHING: "ADD_COACHING",
-  REMOVE_COACHING: "REMOVE_COACHING",
-  UPDATE_COACHING: "UPDATE_COACHING",
-  VISIT: "VISIT",
-} as const;
+  
 
 export type Role = (typeof Role)[keyof typeof Role];
-export type Permission = (typeof Permission)[keyof typeof Permission];
 export type Gender = (typeof Gender)[keyof typeof Gender];
 
 
@@ -47,6 +30,14 @@ export interface User {
   address :Address;
   isProfileCompleted : boolean;
   gender : Gender | null;
+  dob : string;
+  motherName ?: string;
+  fatherName ?: string;
+  parentName ?: string;
+  parentPhone ?: string;
+  parentEmail ?: string;
+  degress ?: string[];
+  experience ?: number;
 }
 
 interface AuthState {
@@ -54,7 +45,8 @@ interface AuthState {
   isAuthenticated: boolean;
 
   setUser: (user: User | null) => void;
-  logout: () => Promise<void>;
+  
+  clearAuth: () => void;
 
   hasRole: (role: Role) => boolean;
 }
@@ -69,18 +61,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       isAuthenticated: !!user,
     }),
 
-  logout: async () => {
-    try {
-      await api.post("/auth/signout");
-    } finally {
-      set({
-        user: null,
-        isAuthenticated: false,
-      });
-    }
-  },
+ clearAuth() {
+     set({
+      user : null,
+      isAuthenticated : false
+     })
+ },
 
-  hasRole: (role) => get().user?.role.includes(role) ?? false,
+  hasRole: (role) => get().user?.role === role,
 
   
 }));

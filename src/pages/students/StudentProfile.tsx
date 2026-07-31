@@ -1,28 +1,14 @@
-// src/pages/otherPages/CompleteStudentProfile.tsx
-// src/coaching/pages/CompleteStudentProfile.tsx
-
-import { PersonOutlineOutlined } from "@mui/icons-material";
+// src/pages/students/StudentProfile.tsx
+import { Autocomplete, Box, Button, Card, CardContent, Divider, Grid, Stack, TextField, Typography } from '@mui/material';
 import * as Yup from "yup"
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Divider,
-  Grid,
-  Stack,
-  TextField,
-  Typography,
-  Autocomplete,
-} from "@mui/material";
-import ProfileSectionCard from "../../Components/ui/ProfileSectionCard";
-import ProfilePhotoUpload from "../../Components/ui/ProfilePhotoUpload";
-import {  Role, useAuthStore } from "../../store/auth.store";
-import { Navigate } from "react-router-dom";
-import type { Address } from "../../store/coaching.store";
-import { Form, Formik } from "formik";
-import { useCompleteStudentProfile } from "../../hooks/student.hook";
-import type { CompleteStudentProfile } from "../../services/StudentService";
+import ProfilePhotoUpload from '../../Components/ui/ProfilePhotoUpload';
+import ProfileSectionCard from '../../Components/ui/ProfileSectionCard';
+import { PersonOutlineOutlined } from '@mui/icons-material';
+import { Form, Formik } from 'formik';
+import { Role, useAuthStore } from '../../store/auth.store';
+import { Navigate } from 'react-router-dom';
+import type { Address } from '../../store/coaching.store';
+import type { CompleteStudentProfile } from '../../services/StudentService';
 
 const addressSchema = Yup.object({
   country: Yup.string().required("Country is required"),
@@ -46,14 +32,6 @@ const addressFields: Array<{ name: keyof Address; label: string }> = [
   { name: "postOffice", label: "Post Office" },
   { name: "building", label: "Building" },
   { name: "houseNo", label: "House No." },
-];
-
-
-
-const genderOptions = [
-  { label: "Male", value: "MALE" },
-  { label: "Female", value: "FEMALE" },
-  { label: "Other", value: "OTHER" },
 ];
 
 const schema = Yup.object({
@@ -93,41 +71,46 @@ const schema = Yup.object({
 });
 
 
-const CompleteStudentProfile = () => {
-      const user = useAuthStore((state) => state.user);
-            const {mutate:completeProfile,isPending , isSuccess} = useCompleteStudentProfile();
-      
-      if(user?.isProfileCompleted || user?.role !== Role.STUDENT){
-        return <Navigate to ="/completeProfile" replace />
-      }
+const StudentProfile = () => {
+    
 
-  const initialValues: CompleteStudentProfile = {
-  name: user?.name ?? "",
-  email: user?.email ?? "",
-  contactNumber: user?.contactNumber ?? "",
-  gender : user?.gender ?? null ,
-  motherName :"",
-  fatherName :"",
-  dob: "",
 
-  parentName: "",
-  parentPhone: "",
-  
-  parentEmail: "",
-  address: {
-    country: user?.address?.country ?? "",
-    state: user?.address?.state ?? "",
-    city: user?.address?.city ?? "",
-    area: user?.address?.area ?? "",
-    pinCode: user?.address?.pinCode ?? "",
-    postOffice: user?.address?.postOffice ?? "",
-    building: user?.address?.building ?? "",
-    houseNo: user?.address?.houseNo ?? "",
-  }
-};
-  
+     const user = useAuthStore(state => state.user)
+     console.log("inside student profile ",user)
+    
+        const role: Role | undefined = user?.role;
 
-  return (
+        if(role !== Role.STUDENT){
+           return   <Navigate to ={"/home"} replace />
+        }
+
+        const initialValues: CompleteStudentProfile = {
+          name: user?.name ?? "",
+          email: user?.email ?? "",
+          contactNumber: user?.contactNumber ?? "",
+          gender : user?.gender ?? null ,
+          motherName : user?.motherName ??"",
+          fatherName : user?.fatherName ?? "",
+          dob: user?.dob ?? "",
+        
+          parentName: user?.parentName ?? "",
+          parentPhone: user?.parentPhone ?? "",
+          
+          parentEmail: user?.parentEmail ?? "",
+          address: {
+            country: user?.address?.country ?? "",
+            state: user?.address?.state ?? "",
+            city: user?.address?.city ?? "",
+            area: user?.address?.area ?? "",
+            pinCode: user?.address?.pinCode ?? "",
+            postOffice: user?.address?.postOffice ?? "",
+            building: user?.address?.building ?? "",
+            houseNo: user?.address?.houseNo ?? "",
+          }
+        };
+
+
+        return (
   <Formik
     initialValues={initialValues}
     validationSchema={schema}
@@ -146,11 +129,11 @@ const CompleteStudentProfile = () => {
     }) => (
       <Form>
         <Box sx={{ p: 4, maxWidth: 1200, mx: "auto" }}>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" sx={{fontWeight:700}}>
             Complete Your Profile
           </Typography>
 
-          <Typography color="text.secondary" mb={4}>
+          <Typography color="text.secondary" sx={{mb:4}}>
             Please complete your information before accessing the dashboard.
           </Typography>
 
@@ -167,7 +150,7 @@ const CompleteStudentProfile = () => {
   <Grid container spacing={2}>
     {/* Row 1 */}
 
-    <Grid item xs={12} md={6}>
+    <Grid size={{ xs: 12, md: 6 }}>
       <TextField
         fullWidth
         disabled
@@ -177,7 +160,7 @@ const CompleteStudentProfile = () => {
       />
     </Grid>
 
-    <Grid item xs={12} md={6}>
+    <Grid size={{ xs: 12, md: 6 }}>
       <TextField
         fullWidth
         disabled
@@ -189,7 +172,7 @@ const CompleteStudentProfile = () => {
 
     {/* Row 2 */}
 
-    <Grid item xs={12} md={4}>
+    <Grid size={{ xs: 12, md: 64}}>
       <TextField
         fullWidth
         label="Contact Number"
@@ -208,7 +191,7 @@ const CompleteStudentProfile = () => {
       />
     </Grid>
 
-    <Grid item xs={12} md={4}>
+    <Grid size={{ xs: 12, md: 64}}>
       <TextField
         fullWidth
         type="date"
@@ -227,8 +210,8 @@ const CompleteStudentProfile = () => {
       />
     </Grid>
 
-    <Grid item xs={12} md={4}>
-  <Autocomplete
+    <Grid size={{ xs: 12, md: 64}}>
+  {/* <Autocomplete
     options={genderOptions}
     value={
       genderOptions.find(
@@ -251,7 +234,7 @@ const CompleteStudentProfile = () => {
         helperText={touched.gender && errors.gender}
       />
     )}
-  />
+  /> */}
 </Grid>
   </Grid>
 </ProfileSectionCard>
@@ -266,7 +249,7 @@ const CompleteStudentProfile = () => {
     <Divider sx={{ my: 2 }} />
 
     <Grid container spacing={2}>
-      <Grid item xs={12} md={6}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <TextField
           fullWidth
           label="Father Name"
@@ -279,7 +262,7 @@ const CompleteStudentProfile = () => {
         />
       </Grid>
 
-      <Grid item xs={12} md={6}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <TextField
           fullWidth
           label="Mother Name"
@@ -292,7 +275,7 @@ const CompleteStudentProfile = () => {
         />
       </Grid>
 
-      <Grid item xs={12} md={6}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <TextField
           fullWidth
           label="Parent Name"
@@ -305,7 +288,7 @@ const CompleteStudentProfile = () => {
         />
       </Grid>
 
-      <Grid item xs={12} md={6}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <TextField
           fullWidth
           label="Parent Mobile Number"
@@ -318,7 +301,7 @@ const CompleteStudentProfile = () => {
         />
       </Grid>
 
-      <Grid item xs={12} md={6}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <TextField
           fullWidth
           label="Parent Email"
@@ -408,6 +391,7 @@ const CompleteStudentProfile = () => {
     )}
   </Formik>
 );
+  
 }
 
-export default CompleteStudentProfile
+export default StudentProfile

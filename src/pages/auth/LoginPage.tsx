@@ -7,6 +7,8 @@ import { Button, TextField, Stack, Typography, Link } from "@mui/material";
 
 import { useLogin } from "../../hooks/auth.hooks";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import type { AxiosError } from "axios";
 
 const LoginSchema = Yup.object({
   email: Yup.string()
@@ -18,6 +20,7 @@ const LoginSchema = Yup.object({
 });
 
 const LoginPage = () => {
+  const [error,setError] = useState<string>("");
   const { mutate: login, isPending } = useLogin();
   const navigate = useNavigate();
 
@@ -38,12 +41,23 @@ const LoginPage = () => {
             initialValues={{ email: "", password: "" }}
             validationSchema={LoginSchema}
             onSubmit={(values) => {
-             login(values);
+             login(values,{
+              onError : (error) =>{
+                const axiosError = error as AxiosError;
+                setError(axiosError?.response?.data?.error?.message ?? "")
+                console.log("error",axiosError.response)
+              }
+             });
             }}
           >
             {({ values, errors, touched, handleChange, handleBlur }) => (
               <Form>
                 <Stack spacing={3}>
+                  {error && (
+          <Typography className="text-center" color="error">
+            {error}
+          </Typography>
+        )}
                   <TextField
                     fullWidth
                     label="Email"

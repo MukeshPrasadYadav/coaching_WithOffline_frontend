@@ -4,6 +4,7 @@
 import { useEffect } from "react";
 import { useGetUser } from "../hooks/auth.hooks";
 import { useAuthStore } from "../store/auth.store";
+import { Box, CircularProgress } from "@mui/material";
 
 export default function AuthProvider({
   children,
@@ -15,19 +16,28 @@ export default function AuthProvider({
   const {
     data: user,
     isPending,
-    isError,
+    status
   } = useGetUser();
 
   useEffect(() => {
-    if (user) {
-      setUser(user);
-    } else if (isError) {
-      setUser(null);
-    }
-  }, [user, isError, setUser]);
+    console.log("user",user)
+    if(status ==="success") setUser(user);
+    else if(status === "error") setUser(null);
+  }, [user, status, setUser]);
 
   if (isPending) {
-    return <div>Loading...</div>;
+  return (
+  <Box
+    sx={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      minHeight: "100vh",
+    }}
+  >
+    <CircularProgress />
+  </Box>
+);
   }
 
   return <>{children}</>;

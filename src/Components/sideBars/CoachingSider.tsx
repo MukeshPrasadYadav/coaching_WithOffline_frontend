@@ -43,25 +43,25 @@ const menu = [
       { text: "Dashboard", icon: LayoutDashboard, path: "/home" },
       { text: "Students", icon: GraduationCap, path: "/students" },
       { text: "Teachers", icon: Users, path: "/teachers" },
-      { text: "Attendance", icon: CalendarCheck, path: "/attendance" },
+     // { text: "Attendance", icon: CalendarCheck, path: "/attendance" },
       { text: "Batches", icon: BookOpen, path: "/batches" },
     ],
   },
-  {
-    section: "Management",
-    items: [
-      { text: "Fees", icon: ReceiptIndianRupee, path: "/fees" },
-      { text: "Exams", icon: Bell, path: "/exams" },
-      { text: "Messages", icon: MessageSquare, path: "/messages" },
-      { text: "Reports", icon: BarChart3, path: "/reports" },
-    ],
-  },
-  {
-    section: "System",
-    items: [
-      { text: "Settings", icon: Settings, path: "/settings" },
-    ],
-  },
+  // {
+  //   section: "Management",
+  //   items: [
+  //     { text: "Fees", icon: ReceiptIndianRupee, path: "/fees" },
+  //     { text: "Exams", icon: Bell, path: "/exams" },
+  //     { text: "Messages", icon: MessageSquare, path: "/messages" },
+  //     { text: "Reports", icon: BarChart3, path: "/reports" },
+  //   ],
+  // },
+  // {
+  //   section: "System",
+  //   items: [
+  //     { text: "Settings", icon: Settings, path: "/settings" },
+  //   ],
+  // },
 ];
 
 export const DrawerHeader = styled("div")(({ theme }) => ({

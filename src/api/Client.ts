@@ -11,6 +11,10 @@ export interface PageResponse<T> {
     pageSize: number;
 }
 
+// page.types.ts
+
+
+
 export function toPageResponse<T>(page: any): PageResponse<T> {
     return {
         items: page.content,

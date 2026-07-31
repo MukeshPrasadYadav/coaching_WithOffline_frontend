@@ -1,5 +1,7 @@
 // src/services/TeacherService.ts
-import { api, toPageResponse, type PageResponse } from '../api/Client';
+import { api} from '../api/Client';
+import { getPage, post } from '../api/response.utility';
+import type { TeacherRegisterRequest } from '../pages/teacher/AddTeacherForm';
 import type { Gender } from '../store/auth.store';
 import type { Address } from '../store/coaching.store';
 
@@ -45,22 +47,17 @@ export interface AppointTeacherFilter{
     subjects:string;
 }
 
+const root = "/teacher";
 const TeacherService ={
 
-    completeProfile : async (request : CompleteTeacherProfile) =>{
-        const res = await api.post("/teacher/completeProfile",request);
-        return res.data;
-    },
+    completeProfile : async (request : CompleteTeacherProfile) => await post<CompleteTeacherProfile,void>(`${root}/completeProfile`,request),
 
-    getTeacher : async (params: TeacherFilter): Promise<PageResponse<TeacherResponse>> =>  {
-        const res = await api.get(`teacher`,{params});
-         return toPageResponse<TeacherResponse>(res.data.data)
-    },
+    getTeacher : async (params: TeacherFilter) => await getPage<TeacherResponse,TeacherFilter>(`${root}`,params),
 
-    addTeacherByAdmin : async (request : TeacherRegisterRequest) =>{
-        const res = await api.post("/teacher",request);
-        return res.data.data;
-    },
+    addTeacherByAdmin : async (request : TeacherRegisterRequest) => await post<TeacherRegisterRequest,void>(`${root}`,request),
+
+
+   
 
     exportTeachers: async (params : TeacherFilter): Promise<void> => {
         try {

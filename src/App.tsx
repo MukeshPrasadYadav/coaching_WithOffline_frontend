@@ -14,6 +14,8 @@ import CompleteProfile from './pages/otherPages/CompleteProfile'
 import CoachingStudents from './pages/otherPages/CoachingStudents'
 import CoachingTeachers from './pages/otherPages/CoachingTeachers'
 import CoachingCourses from './pages/otherPages/CoachingCourses'
+import MyCoaching from './pages/students/StudentBatchePage'
+import Profile from './coaching/pages/Profile'
 const App = () => {
   return (
 
@@ -58,11 +60,13 @@ const App = () => {
       <Route path ="/students" element ={ <CoachingStudents />} />
       <Route path ="/teachers" element ={ <CoachingTeachers />} />
       <Route path ="/courses" element ={ <CoachingCourses />} />
+      <Route path ="/profile" element ={ <Profile />} />
 
-      {/* <Route path="/students" element={< />} />
-      <Route path="/teachers" element={<Teachers />} />
+      {/* Student routes */}
       
-      <Route path="/settings" element={<Settings />} /> */}
+      <Route path ="/my-coachings" element ={ <MyCoaching />} />
+
+    
     </Route>
 
     <Route
