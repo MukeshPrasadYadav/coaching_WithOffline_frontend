@@ -158,7 +158,7 @@ const ManageTeacher = ({ open, closeModal, teacherId }: TeacherFormProps) => {
 }
       {
         tab === "Add" &&
-              <AddTeacherForm />
+              <AddTeacherForm closeModal={closeModal} />
 
       }
       </Box>

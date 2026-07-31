@@ -27,7 +27,7 @@ export const useSignUp =() =>{
   const navigate = useNavigate();
   return useMutation({
     mutationFn: AuthService.signup,
-    onSuccess: async (data) =>{
+    onSuccess: async () =>{
       navigate("/login")
     }
   });
@@ -40,24 +40,23 @@ export const useGetUser = () => {
     queryFn: AuthService.getCurrentUser,
     staleTime: 10 * 60 * 1000,
     gcTime: 15 * 60 * 1000,
-    retry: 1,
-    onSuccess: (data: any) => {
-      console.log("data from get me",data)
-    },
+    retry: false,
+   
   });
 };
 
 export const useLogout = () => {
   const queryClient = useQueryClient();
-  const { logout: logoutFromStore } = useAuthStore();
+  const clearAuth = useAuthStore((s) => s.clearAuth);
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: AuthService.logout,
+
     onSuccess: () => {
-      logoutFromStore();
-      queryClient.clear(); 
-      navigate("/login")
+      clearAuth();
+      queryClient.clear();
+      navigate("/login");
     },
   });
 };

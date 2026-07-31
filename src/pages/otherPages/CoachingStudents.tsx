@@ -29,7 +29,6 @@ const [searchInput, setSearchInput] = useState("");
 
 const [filter, setFilter] = useState<StudentFilter>({
     search: "",
-    class_std: "",
     batch: "",
     fromDate: "",
     toDate: "",
@@ -63,7 +62,7 @@ const user = useAuthStore((state) => state.user);
         }
       });
 
-      const students = (data?.items ?? []) as StudentRow[];
+      const students = (data?.content ?? []) as StudentRow[];
       const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
   };
@@ -190,7 +189,7 @@ const user = useAuthStore((state) => state.user);
         </TableContainer>
 
 <TablePagination
-    count={data?.totalItems ?? 0}
+    count={data?.totalElements ?? 0}
     page={filter.pageNumber}
     rowsPerPage={filter.pageSize}
     rowsPerPageOptions={[10, 25, 50]}

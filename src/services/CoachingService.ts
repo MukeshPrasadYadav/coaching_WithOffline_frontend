@@ -1,6 +1,6 @@
 // src/services/CoachingService.ts
 import { api } from '../api/Client';
-import type { Address, Coaching, CoachingInfo } from '../store/coaching.store';
+import type { Address, CoachingInfo } from '../store/coaching.store';
 
 export interface CoachingRequest {
   name: string;

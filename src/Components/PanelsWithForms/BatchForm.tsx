@@ -5,10 +5,9 @@ import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import CustomDrawer from "../ui/CustomDrawer";
 import { useGetTeacherByCoaching } from "../../hooks/teacher.hooks";
-import { useCoachingStore, type Coaching } from "../../store/coaching.store";
+import { useCoachingStore } from "../../store/coaching.store";
 import { useAddBatch } from "../../hooks/batch.hooks";
-import { Dayjs } from "dayjs";
-import dayjs from "dayjs";
+import type { AddBatchRequest } from "../../services/BatchService";
 
 type FormType = "Add" | "Update";
 
@@ -19,17 +18,7 @@ interface BatchFormProps {
   closeModal: () => void;
 }
 
-export interface AddBatchRequest {
-  name: string;
-  startDate: string;
-  endDate: string;
-  fee: number | "";
-  teachers: number[];
-  subjects: number[];
-  startTime: Dayjs | null;
-  endTime : Dayjs | null;
-  description: string;
-}
+
 
 const initialValues: AddBatchRequest = {
   name: "",
@@ -86,9 +75,9 @@ const batchValidationSchema = Yup.object({
 });
 
 const BatchForm = ({ open, closeModal, batchId }: BatchFormProps) => {
-  const coaching: Coaching = useCoachingStore((state) => state.coaching);
+  const coaching = useCoachingStore((state) => state.coaching);
 
-  const { data, isPending } = useGetTeacherByCoaching(coaching?.id);
+  const { data, isPending } = useGetTeacherByCoaching(coaching?.id ?? "");
   const {mutate : addBatch} = useAddBatch(closeModal);
   console.log("teachers",data)
   const teachers: any[] = data ?? [];
@@ -106,11 +95,10 @@ const BatchForm = ({ open, closeModal, batchId }: BatchFormProps) => {
   validationSchema={batchValidationSchema}
   onSubmit={(values) => {
 
-    addBatch({coachingId : coaching?.id , request : {
-      ...values,
-        startTime: dayjs(values?.startTime).format("HH:mm:ss") ?? null,
-      endTime: dayjs(values?.endTime).format("HH:mm:ss") ?? null,
-    }})
+    addBatch({
+      coachingId: coaching?.id ?? "",
+      request: values,
+    });
   }}
 >
   {({

@@ -1,5 +1,5 @@
 // src/pages/teacher/AddTeacherForm.tsx
-import { Autocomplete, Button, Divider, Grid, Stack, TextField, Typography } from '@mui/material';
+import { Autocomplete, Button, Divider, Grid, Stack, TextField } from '@mui/material';
 import { Form, Formik } from 'formik';
 
 import * as Yup from "yup"
@@ -8,7 +8,7 @@ import { useAddTeacherByAdmin } from '../../hooks/teacher.hooks';
 import { useGetBatchForEnroll } from '../../hooks/batch.hooks';
 
 
-export interface TeacherFormValues {
+export interface TeacherRegisterRequest {
   name: string;
   contactNumber: string;
   email: string;
@@ -18,7 +18,7 @@ export interface TeacherFormValues {
 
 
 
-const initialValues: TeacherFormValues = {
+const initialValues: TeacherRegisterRequest = {
   name: "",
   contactNumber: "",
   email: "",

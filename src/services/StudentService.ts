@@ -1,6 +1,7 @@
 // src/services/StudentService.ts
 
-import { api, toPageResponse, type PageResponse } from "../api/Client";
+import { api } from "../api/Client";
+import { getPage, post } from "../api/response.utility";
 import type { Gender } from "../store/auth.store";
 import type { Address } from "../store/coaching.store";
 
@@ -33,14 +34,15 @@ export type CompleteStudentProfile = Omit<Student, "batches"> & {
 export interface StudentResponse{
     id : string;
     name : string;
-    class_std : string;
-    batch : string;
+    email : string;
+    contactNumber : string;
+    gender: Gender | null;
+    batches : BatchRecord[];
     joiningDate : string;
 }
 
  export interface StudentFilter {
     search : string;
-    class_std : string;
     batch : string;
     toDate : string;
     fromDate : string;
@@ -48,34 +50,17 @@ export interface StudentResponse{
     pageSize : number
 }
 
-
+const root = "/students";
 const StudentService = {
 
-    addStudent : async (request : Student ) =>{
+    addStudent : async (request : Student ) => await post<Student,StudentResponse>(`${root}`,request),
 
-        const res = await api.post("/students",request);
-        console.log("added student response",res.data);
-        return res.data.data;
+    getStudents : async(params : StudentFilter) => await getPage<StudentResponse,StudentFilter>(`${root}`,params),
 
-    },
+    completeProfile : async(request : CompleteStudentProfile) => await post<CompleteStudentProfile,void>(`${root}/completeProfile`,request),
 
-    getStudents: async (
-    params: StudentFilter
-): Promise<PageResponse<StudentResponse>> => {
 
-    const res = await api.get("/students", { params });
 
-    return toPageResponse<StudentResponse>(res.data.data)
-
-    
-},
-
-completeProfile : async(request : CompleteStudentProfile) =>{
-    const res = await api.post("/students/completeProfile",request);
-    return res.data.data;
-},
-
-// Add this method
 exportStudents: async (params : StudentFilter): Promise<void> => {
     try {
         const response = await api.get("/students/export",  {
@@ -96,7 +81,7 @@ exportStudents: async (params : StudentFilter): Promise<void> => {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
         
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Export failed:", error);
         throw error; // or handle as per your error handling
     }

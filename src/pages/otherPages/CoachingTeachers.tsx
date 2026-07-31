@@ -6,9 +6,8 @@ import { SearchIcon } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { Role, useAuthStore } from '../../store/auth.store'
 import { useDebounce } from '../../hooks/debounce'
-import type { BatchRecord, StudentFilter } from '../../services/StudentService'
-import TeacherForm from '../../Components/PanelsWithForms/ManageTeacher'
-import { useExportTeachers, useGetTeachers } from '../../hooks/teacher.hooks'
+import type { BatchRecord } from '../../services/StudentService'
+import {  useGetTeachers } from '../../hooks/teacher.hooks'
 import type { TeacherFilter } from '../../services/TeacherService'
 import TeacherService from '../../services/TeacherService'
 import ManageTeacher from '../../Components/PanelsWithForms/ManageTeacher'
@@ -65,7 +64,7 @@ const CoachingTeachers = () => {
       
       const { data, isLoading, error, refetch } = useGetTeachers(filter);
 
-      const teachers = (data?.items ?? []) as TeacherRow[];
+      const teachers = (data?.content ?? []) as TeacherRow[];
     
       const [modal,setModal] = useState<ModalState>({
         type: null,
@@ -201,7 +200,7 @@ const CoachingTeachers = () => {
         </TableContainer>
 
 <TablePagination
-    count={data?.totalItems ?? 0}
+    count={data?.totalElements ?? 0}
     page={filter.pageNumber}
     rowsPerPage={filter.pageSize}
     rowsPerPageOptions={[10, 25, 50]}

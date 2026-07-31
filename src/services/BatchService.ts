@@ -1,8 +1,8 @@
 // src/services/BatchService.ts
 
-import type dayjs from 'dayjs';
-import { api, toPageResponse, type PageResponse } from '../api/Client';
-import type { AddBatchRequest } from '../Components/PanelsWithForms/BatchForm';
+import { api} from '../api/Client';
+import type { Dayjs } from 'dayjs';
+import {  getPage, post } from '../api/response.utility';
 
 
 
@@ -17,46 +17,47 @@ export interface BatchFilter{
 export interface BatchResponse{
     id : string;
     name : string;
-    totalStudents : number;
-    teachers : string[];
+    totalStudents? : number;
+    teachers?: string[];
     startTime : string;
     endTime : string;
     status : string;
-
+    coachingName ?: string;
 }
 
-const api_perfix = "batch";
+export interface AddBatchRequest {
+  name: string;
+  startDate: string;
+  endDate: string;
+  fee: number | "";
+  teachers: number[];
+  subjects: number[];
+  startTime: Dayjs | null;
+  endTime : Dayjs | null;
+  description: string;
+}
+
+const root = "batch";
 
 const BatchService = {
+
+    addBatch: async ({coachingId,request} : {coachingId: string,request : AddBatchRequest}) => await post<{coachingId: string,request : AddBatchRequest},BatchResponse>(`${root}/${coachingId}`,request),
     
 
-    addBatch: async ({coachingId,request} : {coachingId: string,request : AddBatchRequest}) =>{
-        const res = await api.post(`/${api_perfix}/${coachingId}`,request);
-        console.log("result of batch",res.data)
-        return res.data;
+    getBatch : async (params : BatchFilter) => await getPage<BatchResponse,BatchFilter>(`/${root}`,params),
 
-    },
-
-    getBatch: async (
-        params: BatchFilter
-    ): Promise<PageResponse<BatchResponse>> => {
     
-        const res = await api.get(`/${api_perfix}`, { params });
-    
-        return toPageResponse<BatchResponse>(res.data.data)
-    
-        
-    },
+   
 
     getBatchForEnroll : async() =>{
-        const res = await api.get(`/${api_perfix}/getBatchForEnroll`);
+        const res = await api.get(`/${root}/getBatchForEnroll`);
         console.log("response of batch for enrol",res.data.data)
         return res.data.data;
     },
 
     exportBatch: async (params : BatchFilter): Promise<void> => {
         try {
-            const response = await api.get(`/${api_perfix}/export`,  {
+            const response = await api.get(`/${root}/export`,  {
                 params,
                 responseType: 'blob',           // ← This is crucial
             });
@@ -74,7 +75,7 @@ const BatchService = {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
             
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Export failed:", error);
             throw error; // or handle as per your error handling
         }

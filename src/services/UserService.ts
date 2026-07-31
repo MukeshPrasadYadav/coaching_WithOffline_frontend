@@ -1,6 +1,6 @@
 // src/services/UserService.ts
 
-import type { Role, User } from '../store/auth.store';
+
 import { api } from '../api/Client';
 import type { UpdateProfileRequest } from '../hooks/user.hook';
 
