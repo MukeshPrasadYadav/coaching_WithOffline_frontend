@@ -35,6 +35,19 @@ export const useCompleteStudentProfile = () => {
   });
 };
 
+export const useUpdateStudentDetails = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: StudentService.updateStudentDetails,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["user"],
+      });
+    },
+  });
+};
+
 export const useGetStudents = (params: StudentFilter) => {
   return useQuery({
     queryKey: ["students", params],

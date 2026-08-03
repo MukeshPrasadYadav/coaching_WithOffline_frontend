@@ -3,8 +3,9 @@ import { lazy, Suspense } from 'react'
 import { Role, useAuthStore } from '../../store/auth.store';
 
 
-const TeacherProfile = lazy(() => import('../../pages/otherPages/TeacherProfile'));
  const StudentProfile = lazy(() => import('../../pages/students/StudentProfile'));
+ const TeacherProfile = lazy(() => import("../../pages/teacher/TeacherProfile"))
+
 
 const Profile = () => {
 

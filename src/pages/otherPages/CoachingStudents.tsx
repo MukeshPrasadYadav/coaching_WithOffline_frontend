@@ -8,6 +8,7 @@ import StudentForm from '../../Components/PanelsWithForms/StudentForm'
 import { useExportStudents, useGetStudents } from '../../hooks/student.hook'
 import StudentService, { type StudentFilter, type Student } from '../../services/StudentService'
 import { useDebounce } from '../../hooks/debounce'
+import { useNavigate } from 'react-router-dom'
 
 type ModalType = "AddStudent" | "UpdateStudent" |  "RemoveStudent" | null;
 
@@ -61,6 +62,8 @@ const user = useAuthStore((state) => state.user);
           studentId: null
         }
       });
+
+      const navigate = useNavigate();
 
       const students = (data?.content ?? []) as StudentRow[];
       const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,7 +179,7 @@ const user = useAuthStore((state) => state.user);
 
               {!isLoading && !error && students.map((student) => (
                 <TableRow key={student.id} hover>
-                    <TableCell>{student.name}</TableCell>
+                    <TableCell className = {'cursor-pointer'} onClick={() => navigate(`/students/${student.id}`)}>{student.name}</TableCell>
                     <TableCell>  {student?.batches?.map(batch => batch.batchName).join(", ")}</TableCell>
                     <TableCell>
                         {student.joiningDate ? new Date(student.joiningDate).toLocaleDateString() : "-"}
@@ -187,6 +190,26 @@ const user = useAuthStore((state) => state.user);
           </TableBody>
           </Table>
         </TableContainer>
+
+<TablePagination
+    count={data?.totalElements ?? 0}
+    page={filter.pageNumber}
+    rowsPerPage={filter.pageSize}
+    rowsPerPageOptions={[10, 25, 50]}
+    onPageChange={(_, newPage) => {
+        setFilter(prev => ({
+            ...prev,
+            pageNumber: newPage,
+        }));
+    }}
+    onRowsPerPageChange={(event) => {
+        setFilter(prev => ({
+            ...prev,
+            pageSize: Number(event.target.value),
+            pageNumber: 0,
+        }));
+    }}
+/>    
 
 <TablePagination
     count={data?.totalElements ?? 0}

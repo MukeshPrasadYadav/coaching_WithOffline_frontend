@@ -1,5 +1,6 @@
 // src/api/response.utility.ts
 
+import axios from "axios";
 import type { ApiResponse } from "./api.types";
 import { api } from "./Client";
 

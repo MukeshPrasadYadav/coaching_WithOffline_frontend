@@ -28,6 +28,7 @@ export interface User {
   contactNumber: string;
   role: Role;
   address :Address;
+  profile_picture ?: string;
   isProfileCompleted : boolean;
   gender : Gender | null;
   dob : string;
@@ -38,6 +39,7 @@ export interface User {
   parentEmail ?: string;
   degress ?: string[];
   experience ?: number;
+  subjects ?: string[];
 }
 
 interface AuthState {

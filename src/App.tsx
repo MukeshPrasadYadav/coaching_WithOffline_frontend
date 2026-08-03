@@ -16,6 +16,7 @@ import CoachingTeachers from './pages/otherPages/CoachingTeachers'
 import CoachingCourses from './pages/otherPages/CoachingCourses'
 import MyCoaching from './pages/students/StudentBatchePage'
 import Profile from './coaching/pages/Profile'
+import StudentPage from './pages/otherPages/StudentPage'
 const App = () => {
   return (
 
@@ -61,6 +62,7 @@ const App = () => {
       <Route path ="/teachers" element ={ <CoachingTeachers />} />
       <Route path ="/courses" element ={ <CoachingCourses />} />
       <Route path ="/profile" element ={ <Profile />} />
+      <Route path ="/students/:studentId" element ={<StudentPage />} />
 
       {/* Student routes */}
       

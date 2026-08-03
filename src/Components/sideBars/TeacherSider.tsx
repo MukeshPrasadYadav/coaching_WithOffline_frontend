@@ -28,7 +28,8 @@ import {
 } from "@mui/icons-material";
 
 import { NavLink } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import { BookOpen, ChevronRight, LayoutDashboard, LogOut, User } from "lucide-react";
+import { useLogout } from "../../hooks/auth.hooks";
 
 const drawerWidth = 260
 
@@ -47,84 +48,213 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const menu = [
   {
-    section: "ACADEMICS",
-    
+    section: "Workspace",
     items: [
-      { text: "Dashboard", icon: <Dashboard />, path: "/" },
-      { text: "My classes", icon: <Subject />, path: "/" },
-      { text: "Subjects", icon: <Groups />, path: "/" },
-      { text: "Coachng centers", icon: <AccountBalance />, path: "/" },
-      { text: "Students", icon: <People />, path: "/" },
-      { text: "Schedule", icon: <Event />, path: "/" },
-      { text: "Assignments", icon: <Assignment />, path: "/" },
-      { text: "Attendace", icon: <AssignmentTurnedIn />, path: "/" },
-      { text: "Messages", icon: <ChatBubble />, path: "/" },
-      { text: "Earnings", icon: <CurrencyRupee />, path: "/" },
-      { text: "Profile", icon: <Person />, path: "/teacherProfile" }
-
+      {
+        text: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/home",
+      },
+      {
+        text: "Profile",
+        icon: User,
+        path: "/profile",
+      },
+      {
+        text: "My Batch",
+        icon: BookOpen,
+        path: "/batches",
+      }
+      
+      
     ],
-  }
+  },
+  // {
+  //   section: "System",
+  //   items: [
+  //     {
+  //       text: "Settings",
+  //       icon: Settings,
+  //       path: "/student/settings",
+  //     },
+  //   ],
+  // },
 ];
 
+
 const TeacherSider = ({ open, isDesktop, onClose }: SiderProp) => {
+
+    const { mutate: logout, isPending } = useLogout();
   
-    return (
-        <Drawer
-          variant={isDesktop ? "permanent" : "temporary"}
-          open={open}
-          onClose={onClose}
-          ModalProps={{ keepMounted: true }}
+  
+  
+     return (
+    <Drawer
+      variant={isDesktop ? "permanent" : "temporary"}
+      open={open}
+      onClose={onClose}
+      ModalProps={{ keepMounted: true }}
+      sx={{
+        width: open ? drawerWidth : 0,
+        flexShrink: 0,
+        "& .MuiDrawer-paper": {
+          width: drawerWidth,
+          boxSizing: "border-box",
+          borderRight: 0,
+          bgcolor: "#0F172A",
+          color: "#CBD5E1",
+          px: 1.5,
+        },
+      }}
+    >
+      <DrawerHeader>
+        <Box>
+          <Typography
+            sx={{
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: 17,
+            }}
+          >
+            Student Portal
+          </Typography>
+
+          <Typography
+            sx={{
+              color: "#94A3B8",
+              fontSize: 12,
+            }}
+          >
+            Learning Dashboard
+          </Typography>
+        </Box>
+
+        <IconButton
+          onClick={onClose}
           sx={{
-            width: open ? drawerWidth : 0,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              width: drawerWidth,
-              boxSizing: "border-box",
-              borderRight: "1px solid",
-              borderColor: "divider",
+            color: "#CBD5E1",
+            display: isDesktop ? "none" : "inline-flex",
+          }}
+        >
+          <ChevronRight size={20} />
+        </IconButton>
+      </DrawerHeader>
+
+      {menu.map((group) => (
+        <Box key={group.section} sx={{ mt: 1 }}>
+          <Typography
+            variant="caption"
+            sx={{
+              px: 1.5,
+              py: 1,
+              display: "block",
+              color: "#64748B",
+              fontWeight: 700,
+              textTransform: "uppercase",
+            }}
+          >
+            {group.section}
+          </Typography>
+
+          <List>
+            {group.items.map((item) => (
+              <ListItemButton
+                key={item.text}
+                component={NavLink}
+                to={item.path}
+                onClick={!isDesktop ? onClose : undefined}
+                sx={{
+                  minHeight: 42,
+                  borderRadius: 2.5,
+                  color: "#CBD5E1",
+                  mb: 0.25,
+                  px: 1.5,
+
+                  "&:hover": {
+                    bgcolor: "rgba(255,255,255,0.08)",
+                    color: "#fff",
+                  },
+
+                  "&.active": {
+                    bgcolor: "#1E40AF",
+                    color: "#fff",
+
+                    "& .MuiListItemIcon-root": {
+                      color: "#fff",
+                    },
+                  },
+                }}
+              >
+                                <ListItemIcon
+                  sx={{
+                    color: "inherit",
+                    minWidth: 36,
+                  }}
+                >
+                  <item.icon size={19} />
+                </ListItemIcon>
+
+
+                <ListItemText
+                  primary={
+                    <Typography
+                      component="span"
+                      sx={{
+                        fontSize: 14,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {item.text}
+                    </Typography>
+                  }
+                />
+              </ListItemButton>
+            ))}
+          </List>
+        </Box>
+      ))}
+
+      <Box sx={{ mt: "auto", py: 2 }}>
+        <ListItemButton
+          disabled={isPending}
+          onClick={() => logout()}
+          sx={{
+            minHeight: 42,
+            borderRadius: 2.5,
+            color: "#CBD5E1",
+
+            "&:hover": {
+              bgcolor: "rgba(255,255,255,0.08)",
+              color: "#fff",
             },
           }}
         >
-          <DrawerHeader>
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              Coaching ERP
-            </Typography>
-            <IconButton aria-label="Close sidebar" onClick={onClose}>
-              <ChevronRight />
-            </IconButton>
-          </DrawerHeader>
-    
-          <Divider />
-    
-          {menu.map((group) => (
-            <Box key={group.section}>
+          <ListItemIcon
+            sx={{
+              color: "inherit",
+              minWidth: 36,
+            }}
+          >
+            <LogOut size={19} />
+          </ListItemIcon>
+
+          <ListItemText
+            primary={
               <Typography
-                variant="caption"
-                sx={{ px: 2, pt: 2, color: "text.secondary" }}
+                component="span"
+                sx={{
+                  fontSize: 14,
+                  fontWeight: 500,
+                }}
               >
-                {group.section}
+                Logout
               </Typography>
-    
-              <List>
-                {group.items.map((item) => (
-                  <ListItemButton
-                    key={item.text}
-                    component={NavLink}
-                    to={item.path}
-                    onClick={!isDesktop ? onClose : undefined}
-                  >
-                    <ListItemIcon>{item.icon}</ListItemIcon>
-    
-                    <ListItemText primary={item.text} />
-                  </ListItemButton>
-                ))}
-              </List>
-    
-              <Divider />
-            </Box>
-          ))}
-        </Drawer>
-      );
+            }
+          />
+        </ListItemButton>
+      </Box>
+    </Drawer>
+  );
   
 }
 

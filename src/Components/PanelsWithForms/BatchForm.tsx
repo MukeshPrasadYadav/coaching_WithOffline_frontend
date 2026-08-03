@@ -95,9 +95,17 @@ const BatchForm = ({ open, closeModal, batchId }: BatchFormProps) => {
   validationSchema={batchValidationSchema}
   onSubmit={(values) => {
 
+    const payLoad = {
+      ...values,
+      startDate: values.startDate,
+      endDate: values.endDate,
+      startTime : values.startTime?.format("HH:mm:ss") ?? null,
+      endTime : values.endTime?.format("HH:mm:ss") ?? null,
+    };
+
     addBatch({
       coachingId: coaching?.id ?? "",
-      request: values,
+      request: payLoad,
     });
   }}
 >
