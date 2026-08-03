@@ -32,6 +32,7 @@ export default function Navbar({ reserveMenuSpace = false }: NavbarProps) {
     setAnchorEl(null);
   };
 
+  console.log("user", user);
   return (
     <nav className="sticky top-0 z-50 h-[70px] border-b border-[rgb(var(--border))] bg-[rgb(var(--card))]">
       <div
@@ -40,7 +41,7 @@ export default function Navbar({ reserveMenuSpace = false }: NavbarProps) {
       >
         <div className="min-w-0">
           <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600 }}>
-            Admin / {pageTitle}
+            {user?.role} / {pageTitle}
           </Typography>
           <h1 className="m-0 truncate text-[22px] font-bold leading-tight text-[rgb(var(--text-primary))]">
             {pageTitle}
@@ -85,9 +86,17 @@ export default function Navbar({ reserveMenuSpace = false }: NavbarProps) {
             onClick={(event) => setAnchorEl(event.currentTarget)}
             sx={{ minWidth: 0, gap: 1, px: 1 }}
           >
-            <Avatar sx={{ width: 32, height: 32, bgcolor: "primary.main", fontSize: 13 }}>
-              {user?.name?.charAt(0)?.toUpperCase() ?? "A"}
-            </Avatar>
+            <Avatar
+  src={user?.profile_picture || undefined}
+  alt={user?.name}
+  sx={{
+    width: 32,
+    height: 32,
+    bgcolor: "primary.main",
+  }}
+>
+  {!user?.profile_picture && user?.name?.charAt(0).toUpperCase()}
+</Avatar>
             <span className="hidden max-w-28 truncate text-sm md:inline">{user?.name ?? "Admin"}</span>
             <ChevronDown size={16} />
           </Button>

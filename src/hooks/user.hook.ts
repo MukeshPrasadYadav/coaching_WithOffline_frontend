@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore, type User } from "../store/auth.store";
-import UserService from "../services/UserService";
+import UserService, { type UpdateProfilePictureRequest } from "../services/UserService";
 
 export interface UpdateProfileRequest {
     name: string;
@@ -20,6 +20,7 @@ export interface UpdateProfileRequest {
     };
 }
 
+const user = useAuthStore.getState().user;
 
 export const useUpdateUser = (userId:string) =>{
     const queryClient = useQueryClient();
@@ -40,3 +41,18 @@ export const useUpdateUser = (userId:string) =>{
   });
 
 }
+
+export const useUpdateUserProfilePicture = () => {
+  const queryClient = useQueryClient();
+  const setUser = useAuthStore((state) => state.setUser);
+
+  return useMutation({
+    mutationFn: UserService.updateUserProfilePicture,
+
+    onSuccess: (updatedUser) => {
+      console.log("Updated user profile picture:", updatedUser);
+      queryClient.setQueryData(["user"], updatedUser);
+      setUser(updatedUser);
+    },
+  });
+};

@@ -9,6 +9,7 @@ import { Role, useAuthStore } from '../../store/auth.store';
 import { Navigate } from 'react-router-dom';
 import type { Address } from '../../store/coaching.store';
 import type { CompleteStudentProfile } from '../../services/StudentService';
+import { useUpdateStudentDetails } from '../../hooks/student.hook';
 
 const addressSchema = Yup.object({
   country: Yup.string().required("Country is required"),
@@ -35,15 +36,10 @@ const addressFields: Array<{ name: keyof Address; label: string }> = [
 ];
 
 const schema = Yup.object({
-  name: Yup.string()
-    .trim()
-    .required("Student name is required")
-    .max(50, "Maximum 50 characters allowed"),
+  
+  profilePicture : Yup.string(),
 
-  parentName: Yup.string()
-    .trim()
-    .required("Parent name is required")
-    .max(50, "Maximum 50 characters allowed"),
+  
 
   contactNumber: Yup.string()
     .required("Student mobile number is required")
@@ -57,15 +53,12 @@ const schema = Yup.object({
       "Student and parent mobile numbers cannot be the same"
     ),
 
-  email: Yup.string()
-    .trim()
-    .email("Enter a valid email"),
+  
 
   parentEmail: Yup.string()
     .trim()
     .email("Enter a valid email"),
     
-  gender : Yup.string().required("Gender is required"),
 
   address: addressSchema,
 });
@@ -73,6 +66,7 @@ const schema = Yup.object({
 
 const StudentProfile = () => {
     
+        const {mutate: updateStudentDetails} = useUpdateStudentDetails();
 
 
      const user = useAuthStore(state => state.user)
@@ -88,6 +82,7 @@ const StudentProfile = () => {
           name: user?.name ?? "",
           email: user?.email ?? "",
           contactNumber: user?.contactNumber ?? "",
+          profilePicture: user?.profile_picture ?? "",
           gender : user?.gender ?? null ,
           motherName : user?.motherName ??"",
           fatherName : user?.fatherName ?? "",
@@ -116,7 +111,8 @@ const StudentProfile = () => {
     validationSchema={schema}
     onSubmit={(values) => {
       console.log(values);
-      completeProfile(values);
+
+      updateStudentDetails(values);
     }}
   >
     {({
@@ -128,7 +124,7 @@ const StudentProfile = () => {
       setFieldValue,
     }) => (
       <Form>
-        <Box sx={{ p: 4, maxWidth: 1200, mx: "auto" }}>
+          
           <Typography variant="h4" sx={{fontWeight:700}}>
             Complete Your Profile
           </Typography>
@@ -145,7 +141,14 @@ const StudentProfile = () => {
   icon={<PersonOutlineOutlined color="primary" />}
   title="Basic Details"
   subtitle="Let's start with some basic information about you."
-  photoSection={<ProfilePhotoUpload />}
+  photoSection={
+  <ProfilePhotoUpload 
+  currentImage={user?.profile_picture ?? ""}
+  subFolder ="profile"
+  fileName = "profile_photo"
+  entityId={user?.id ?? ""}
+  onUploaded = {(url) => console.log("Profile photo uploaded to:", url)}
+    />}
 >
   <Grid container spacing={2}>
     {/* Row 1 */}

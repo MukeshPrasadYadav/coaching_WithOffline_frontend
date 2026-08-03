@@ -1,20 +1,21 @@
-// src/pages/otherPages/CompleteTeacherProfile.tsx
-// src/coaching/pages/CompleteTeacherProfile.tsx
-import { CloseRounded, PersonOutlineOutlined, SaveRounded, SchoolRounded } from '@mui/icons-material'
-import { Autocomplete, Box, Button, Card, CardContent, Divider, Grid, Stack, TextField, Typography } from '@mui/material'
-import { Form, Formik } from 'formik'
-import * as Yup from "yup"
-import { Role, useAuthStore } from '../../store/auth.store'
-import { Navigate } from 'react-router-dom'
-import ProfilePhotoUpload from '../../Components/ui/ProfilePhotoUpload'
-import ProfileSectionCard from '../../Components/ui/ProfileSectionCard'
-import { useCompleteStudentProfile } from '../../hooks/student.hook'
-import type { CompleteTeacherProfile } from '../../services/TeacherService'
-import type { Address } from '../../store/coaching.store'
-import { useCompleteTeacherProfile } from '../../hooks/teacher.hooks'
+// src/pages/teacher/TeacherProfile.tsx
+
+import * as Yup from "yup";
+import {Formik,Form} from "formik"
+import type { Address } from "../../store/coaching.store";
+import type { CompleteTeacherProfile } from "../../services/TeacherService";
+import { Role, useAuthStore } from "../../store/auth.store";
+import { useCompleteTeacherProfile } from "../../hooks/teacher.hooks";
+import { Navigate } from "react-router-dom";
+import { Autocomplete, Box, Button, Card, CardContent, Divider, Grid, InputAdornment, Stack, TextField, Typography } from "@mui/material";
+import ProfileSectionCard from "../../Components/ui/ProfileSectionCard";
+import { PersonOutlineOutlined } from "@mui/icons-material";
+import ProfilePhotoUpload from "../../Components/ui/ProfilePhotoUpload";
+import { CalendarIcon } from "lucide-react";
 
 
- const schema = Yup.object({
+
+const schema = Yup.object({
   name: Yup.string()
     .required("Coaching name is required")
     .max(50, "Maximum 50 characters"),
@@ -83,12 +84,6 @@ degrees  : Yup.array()
   }),
 });
 
-const genderOptions = [
-  { label: "Male", value: "MALE" },
-  { label: "Female", value: "FEMALE" },
-  { label: "Other", value: "OTHER" },
-];
-
 const addressFields: Array<{ name: keyof Address; label: string }> = [
   { name: "country", label: "Country" },
   { name: "state", label: "State" },
@@ -102,27 +97,26 @@ const addressFields: Array<{ name: keyof Address; label: string }> = [
 
 
 
+const TeacherProfile = () => {
 
-const CompleteTeacherProfile = () => {
-  const user = useAuthStore((state) => state.user);
+    const user = useAuthStore((state) => state.user);
 
   const {mutate : completeProfile, isPending,isSuccess} = useCompleteTeacherProfile();
     
-      if(user?.isProfileCompleted || user?.role !== Role.TEACHER){
+      if(user?.role !== Role.TEACHER){
         return <Navigate to ="/completeProfile" replace />
       }
-      if(isSuccess || user?.isProfileCompleted){
-        return <Navigate to="/home" replace />
-      }
+      
 
       const initialValues: CompleteTeacherProfile = {
         name: user?.name ?? "",
         email: user?.email ?? "",
         contactNumber: user?.contactNumber ?? "",
         gender : user?.gender ?? null ,
-        dob: "",
-        degrees : [],
-        subjects : [],
+        dob:user?.dob ?? "",
+        degrees : user?.degress ??  [],
+        subjects : user?.subjects ?? [],
+        experience : user?.experience ?? 0,
         address: {
           country: user?.address?.country ?? "",
           state: user?.address?.state ?? "",
@@ -134,7 +128,6 @@ const CompleteTeacherProfile = () => {
           houseNo: user?.address?.houseNo ?? "",
         }
       };
-
   return (
     <Formik
     initialValues={initialValues}
@@ -223,6 +216,7 @@ const CompleteTeacherProfile = () => {
 
     <Grid item xs={12} md={4}>
       <TextField
+        disabled
         fullWidth
         type="date"
         label="Date of Birth"
@@ -230,6 +224,13 @@ const CompleteTeacherProfile = () => {
         value={values.dob}
         onChange={handleChange}
         onBlur={handleBlur}
+        InputProps={{
+    startAdornment: (
+      <InputAdornment position="start">
+        <CalendarIcon />
+      </InputAdornment>
+    ),
+  }}
         slotProps={{
           inputLabel: {
             shrink: true,
@@ -241,30 +242,23 @@ const CompleteTeacherProfile = () => {
     </Grid>
 
     <Grid item xs={12} md={4}>
-  <Autocomplete
-    options={genderOptions}
-    value={
-      genderOptions.find(
-        (option) => option.value === values.gender
-      ) ?? null
-    }
-    onChange={(_, value) =>
-      setFieldValue("gender", value?.value ?? "")
-    }
-    isOptionEqualToValue={(option, value) =>
-      option.value === value.value
-    }
-    getOptionLabel={(option) => option.label}
-    renderInput={(params) => (
-      <TextField
-        {...params}
+        <TextField
+        disabled
+        fullWidth
+        type="text"
         label="Gender"
+        name="gender"
+        value={values.gender}
+        onChange={handleChange}
         onBlur={handleBlur}
+        slotProps={{
+          inputLabel: {
+            shrink: true,
+          },
+        }}
         error={touched.gender && Boolean(errors.gender)}
         helperText={touched.gender && errors.gender}
       />
-    )}
-  />
 </Grid>
   </Grid>
 </ProfileSectionCard>
@@ -337,7 +331,7 @@ const CompleteTeacherProfile = () => {
       </Grid>
 
       {/* Fee */}
-      <Grid size={{ xs: 12, md: 6 }}>
+      {/* <Grid size={{ xs: 12, md: 6 }}>
         <TextField
           fullWidth
           type="number"
@@ -349,7 +343,7 @@ const CompleteTeacherProfile = () => {
           error={touched.fee && Boolean(errors.fee)}
           helperText={touched.fee && errors.fee}
         />
-      </Grid>
+      </Grid> */}
     </Grid>
   </CardContent>
 </Card>
@@ -430,4 +424,4 @@ const CompleteTeacherProfile = () => {
   )
 }
 
-export default CompleteTeacherProfile
+export default TeacherProfile

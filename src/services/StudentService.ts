@@ -27,7 +27,14 @@ export type CompleteStudentProfile = Omit<Student, "batches"> & {
   parentPhone: string;
   parentEmail?: string;
   address : Address;
-};
+  };
+
+export interface UpdareStudentDetails{
+    contatNumber : string;
+    parentNumber : string;
+    parentEmail : string;
+    address : Address;
+}
 
 
 
@@ -58,6 +65,8 @@ const StudentService = {
     getStudents : async(params : StudentFilter) => await getPage<StudentResponse,StudentFilter>(`${root}`,params),
 
     completeProfile : async(request : CompleteStudentProfile) => await post<CompleteStudentProfile,void>(`${root}/completeProfile`,request),
+
+    updateStudentDetails : async(request : UpdareStudentDetails) => await post<UpdareStudentDetails,void>(`${root}/updateDetails`,request),
 
 
 
