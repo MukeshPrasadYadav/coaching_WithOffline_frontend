@@ -21,7 +21,7 @@ export default function AuthProvider({
 
   useEffect(() => {
     console.log("user",user)
-    if(status ==="success") setUser(user);
+    if(status ==="success") setUser(user.user);
     else if(status === "error") setUser(null);
   }, [user, status, setUser]);
 

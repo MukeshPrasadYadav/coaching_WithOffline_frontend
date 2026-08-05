@@ -14,9 +14,10 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: AuthService.login,
     onSuccess: async () =>{
-        const user = await AuthService.getCurrentUser();
-        setUser(user);
-        queryClient.setQueryData(['user'], user);
+        const data = await AuthService.getCurrentUser();
+        console.log(data);
+        setUser(data.user);
+        queryClient.setQueryData(['user'], data.user);
         navigate('/home'); 
     }
   });

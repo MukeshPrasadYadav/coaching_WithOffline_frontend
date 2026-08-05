@@ -74,6 +74,7 @@ export interface CoachingFormValues {
 const CompleteCoachingProfile = () => {
     const user = useAuthStore((state) => state.user);
       const {mutate:addCoaching,isPending , isSuccess} = useAddCoaching();
+      console.log(user)
     
       if(user?.isProfileCompleted || user?.role !== Role.ADMIN){
         return <Navigate to ="/completeProfile" replace />

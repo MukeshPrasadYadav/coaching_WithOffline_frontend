@@ -389,7 +389,6 @@ const StudentProfile = () => {
     </Button>
   </Stack>
 </Box>
-        </Box>
       </Form>
     )}
   </Formik>

@@ -101,6 +101,8 @@ const TeacherProfile = () => {
 
     const user = useAuthStore((state) => state.user);
 
+    console.log("user in teacher profile",user)
+
   const {mutate : completeProfile, isPending,isSuccess} = useCompleteTeacherProfile();
     
       if(user?.role !== Role.TEACHER){
