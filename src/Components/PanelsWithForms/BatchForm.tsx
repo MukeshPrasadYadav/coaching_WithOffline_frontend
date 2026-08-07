@@ -8,6 +8,7 @@ import { useGetTeacherByCoaching } from "../../hooks/teacher.hooks";
 import { useCoachingStore } from "../../store/coaching.store";
 import { useAddBatch } from "../../hooks/batch.hooks";
 import type { AddBatchRequest } from "../../services/BatchService";
+import { useAuthStore } from "../../store/auth.store";
 
 type FormType = "Add" | "Update";
 
@@ -76,8 +77,10 @@ const batchValidationSchema = Yup.object({
 
 const BatchForm = ({ open, closeModal, batchId }: BatchFormProps) => {
   const coaching = useCoachingStore((state) => state.coaching);
+  const user = useAuthStore((state) => state.user);
+  console.log("coaching",coaching)
 
-  const { data, isPending } = useGetTeacherByCoaching(coaching?.id ?? "");
+  const { data, isPending } = useGetTeacherByCoaching(coaching?.id ?? user?.id ?? "");
   const {mutate : addBatch} = useAddBatch(closeModal);
   console.log("teachers",data)
   const teachers: any[] = data ?? [];
