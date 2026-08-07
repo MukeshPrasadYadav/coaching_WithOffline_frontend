@@ -63,3 +63,13 @@ export const useExportStudents = () => {
     mutationFn: StudentService.exportStudents,
   });
 };
+
+export const useGetStudentById = (studentId: string) => {
+  return useQuery({
+    queryKey: ["student", studentId],
+    queryFn: () => StudentService.getStudentById(studentId),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    retry: 1,
+  });
+}

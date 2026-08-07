@@ -59,7 +59,8 @@ interface AddTeacherFormProps{
 
 const AddTeacherForm = ({closeModal} : AddTeacherFormProps) => {
       const {mutate: addTeacher,isPending} = useAddTeacherByAdmin(closeModal);
-          const {data: batches } = useGetBatchForEnroll();
+      const enabled = !closeModal;
+          const {data: batches } = useGetBatchForEnroll({enabled});
 
           const subjectOptions = [
   ...new Set(

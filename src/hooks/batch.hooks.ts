@@ -3,6 +3,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import BatchService, { type BatchFilter } from "../services/BatchService";
 
+type UseGetBatchForEnrollProps = {
+  enabled: boolean;
+};
+
 
 
 export const useAddBatch = (closeModal: () => void) => {
@@ -20,13 +24,14 @@ export const useAddBatch = (closeModal: () => void) => {
     });
 };
 
-export const useGetBatchForEnroll = () => {
+export const useGetBatchForEnroll = ({enabled } : UseGetBatchForEnrollProps) => {
   return useQuery({
     queryKey: ["batch"],
     queryFn: BatchService.getBatchForEnroll,
     staleTime: 10 * 60 * 1000,
     gcTime: 15 * 60 * 1000,
     retry: 1,
+    enabled
   });
 };
 
@@ -45,3 +50,13 @@ export const useExportBatch = () => {
     mutationFn: BatchService.exportBatch,
   });
 };
+
+export const useGetBatchById = (batchId: string) => {
+  return useQuery({
+    queryKey: ["batch", batchId],
+    queryFn: () => BatchService.getBatchById(batchId),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    retry: 1,
+  });
+}

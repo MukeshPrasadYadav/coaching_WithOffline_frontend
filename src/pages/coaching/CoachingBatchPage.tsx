@@ -10,6 +10,7 @@ import type { BatchFilter } from "../../services/BatchService";
 import {  useGetBatches } from "../../hooks/batch.hooks";
 import BatchService from "../../services/BatchService";
 import { SearchIcon } from 'lucide-react'
+import { useNavigate } from "react-router";
 
 
 type ModalType = "AddBatch" | null;
@@ -48,6 +49,7 @@ const CoachingBatchPage = () => {
     const user = useAuthStore((state) => state.user);
     const { data, refetch } = useGetBatches(filter);
     const batches = data?.content
+    const navigate = useNavigate();
 
     console.log("batches",data)
   
@@ -151,8 +153,8 @@ const CoachingBatchPage = () => {
       <TableBody>
        
         {batches?.map((batch) => (
-          <TableRow key={batch?.name ?? ""} hover>
-            <TableCell sx={{ fontWeight: 600 }}>{batch?.name ?? ""}</TableCell>
+          <TableRow key={batch?.id ?? ""} hover>
+            <TableCell className = {'cursor-pointer'} onClick={() => navigate(`/batches/${batch.id}`)}>{batch?.name ?? ""}</TableCell>
             <TableCell>{batch?.teachers ?? ""}</TableCell>
             <TableCell >{batch?.totalStudents}</TableCell>
             <TableCell>

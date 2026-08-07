@@ -211,25 +211,7 @@ const user = useAuthStore((state) => state.user);
     }}
 />    
 
-<TablePagination
-    count={data?.totalElements ?? 0}
-    page={filter.pageNumber}
-    rowsPerPage={filter.pageSize}
-    rowsPerPageOptions={[10, 25, 50]}
-    onPageChange={(_, newPage) => {
-        setFilter(prev => ({
-            ...prev,
-            pageNumber: newPage,
-        }));
-    }}
-    onRowsPerPageChange={(event) => {
-        setFilter(prev => ({
-            ...prev,
-            pageSize: Number(event.target.value),
-            pageNumber: 0,
-        }));
-    }}
-/>    
+
  </Paper>
 
   <StudentForm open={modal.type === "AddStudent" } type= "Add" studentId={null} closeModal={() => setModal({type : null , params :{studentId : ""}})}/>
