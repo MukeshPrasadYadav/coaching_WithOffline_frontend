@@ -54,13 +54,15 @@ const schema = Yup.object({
 
 interface AddTeacherFormProps{
       closeModal: () => void;
+      open : boolean
 
 }
 
-const AddTeacherForm = ({closeModal} : AddTeacherFormProps) => {
+const AddTeacherForm = ({closeModal,open} : AddTeacherFormProps) => {
       const {mutate: addTeacher,isPending} = useAddTeacherByAdmin(closeModal);
-      const enabled = !closeModal;
-          const {data: batches } = useGetBatchForEnroll({enabled});
+
+
+          const {data: batches } = useGetBatchForEnroll({enabled : open});
 
           const subjectOptions = [
   ...new Set(
