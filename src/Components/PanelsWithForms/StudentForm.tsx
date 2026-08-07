@@ -71,7 +71,7 @@ const StudentForm = ({open, closeModal, studentId} : StudentFormProps) => {
   const {mutate : addStudent, isPending } = useAddStudent(closeModal);
   const coaching: Coaching = useCoachingStore((state) => state.coaching);
   
-    const {data: batches } = useGetBatchForEnroll();
+    const {data: batches } = useGetBatchForEnroll({enabled : open});
     console.log("batches",batches)
 
 

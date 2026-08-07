@@ -2,7 +2,7 @@
 
 import { api} from '../api/Client';
 import type { Dayjs } from 'dayjs';
-import {  getPage, post } from '../api/response.utility';
+import {  get, getPage, post } from '../api/response.utility';
 
 
 
@@ -37,6 +37,15 @@ export interface AddBatchRequest {
   description: string;
 }
 
+export interface BatchDetails extends BatchResponse {
+  subjects: string[];
+  roomNo: string;
+  startDate: string;
+  endDate: string;
+  scheduled: string[];
+  fees: string;
+}
+
 const root = "batch";
 
 const BatchService = {
@@ -45,6 +54,8 @@ const BatchService = {
     
 
     getBatch : async (params : BatchFilter) => await getPage<BatchResponse,BatchFilter>(`/${root}`,params),
+    
+    getBatchById : async (batchId : string) => await get<BatchDetails>(`${root}/${batchId}`),
 
     
    

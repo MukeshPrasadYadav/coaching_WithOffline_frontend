@@ -1,7 +1,7 @@
 // src/services/StudentService.ts
 
 import { api } from "../api/Client";
-import { getPage, post } from "../api/response.utility";
+import { get, getPage, post } from "../api/response.utility";
 import type { Gender } from "../store/auth.store";
 import type { Address } from "../store/coaching.store";
 
@@ -28,6 +28,22 @@ export type CompleteStudentProfile = Omit<Student, "batches"> & {
   parentEmail?: string;
   address : Address;
   };
+
+  export interface StudentProfileDetail{
+    id ? : string;
+    name : string;
+    email : string;
+    contactNumber : string;
+    profilePicture : string;
+     gender: Gender | null;
+     fatherName : string;
+     guardianEmail : string;
+     guardianName : string;
+     guardianPhone : string;
+     motherName : string;
+     dob : string;
+
+  }
 
 export interface UpdareStudentDetails{
     contatNumber : string;
@@ -67,6 +83,8 @@ const StudentService = {
     completeProfile : async(request : CompleteStudentProfile) => await post<CompleteStudentProfile,void>(`${root}/completeProfile`,request),
 
     updateStudentDetails : async(request : UpdareStudentDetails) => await post<UpdareStudentDetails,void>(`${root}/updateDetails`,request),
+
+    getStudentById : async(studentId : string) => await get<StudentResponse>(`${root}/${studentId}`),
 
 
 
