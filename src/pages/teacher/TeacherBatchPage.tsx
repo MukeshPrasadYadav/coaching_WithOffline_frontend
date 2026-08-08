@@ -7,10 +7,19 @@ import { useGetBatches } from '../../hooks/batch.hooks';
 import { Button, Chip, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from '@mui/material';
 import { Add, FilterList, Refresh } from '@mui/icons-material';
 import { SearchIcon } from 'lucide-react';
+import CoachingAdmission from '../../Components/PanelsWithForms/CoachingAdmission';
+
+type ModalType = "Admission" | null;
+
+interface ModalState{
+  type: ModalType;
+  
+}
 
 const TeacherBatchPage = () => {
   const [searchInput, setSearchInput] = useState("");           
         const debouncedSearch = useDebounce(searchInput, 400);
+         const [modal,setModal] = useState<ModalState>()
       
       const [filter, setFilter] = useState<BatchFilter>({
           search: "",
@@ -68,7 +77,7 @@ const TeacherBatchPage = () => {
           <Button
            startIcon= {<Add />}
            variant="contained"
-        //    onClick={() => setModal({ type: "AddBatch" , params : {coachingId : ""}})}
+            onClick={() => setModal({ type: "Admission"})}
            >
             Admission
           </Button>
@@ -170,7 +179,7 @@ const TeacherBatchPage = () => {
     }}
 />    
 </Paper>
-  {/* <BatchForm open = {modal.type === "AddBatch"} type="Add" batchId={null} closeModal={() => setModal({type: null , params:{batchId : ""}})} /> */}
+  <CoachingAdmission open ={modal?.type === "Admission"}  closeModal={() => setModal({type : null })} />
 </div>
 
 

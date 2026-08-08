@@ -105,6 +105,22 @@ const StudentForm = ({open, closeModal, studentId} : StudentFormProps) => {
   </Typography>
 
   <Grid container spacing={3}>
+    
+    <Grid size={{ xs: 12, sm: 6 }}>
+      <TextField
+        fullWidth
+        variant="standard"
+        label="Email"
+        name="email"
+        value={values.email}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        error={Boolean(touched.email && errors.email)}
+        helperText={touched.email && errors.email}
+      />
+    </Grid>
+
+    
     <Grid size={{ xs: 12, sm: 6 }}>
       <TextField
         fullWidth
@@ -118,7 +134,6 @@ const StudentForm = ({open, closeModal, studentId} : StudentFormProps) => {
         helperText={touched.name && errors.name}
       />
     </Grid>
-
     <Grid size={{ xs: 12, sm: 6 }}>
       <TextField
         fullWidth
@@ -133,19 +148,7 @@ const StudentForm = ({open, closeModal, studentId} : StudentFormProps) => {
       />
     </Grid>
 
-    <Grid size={{ xs: 12, sm: 6 }}>
-      <TextField
-        fullWidth
-        variant="standard"
-        label="Email"
-        name="email"
-        value={values.email}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={Boolean(touched.email && errors.email)}
-        helperText={touched.email && errors.email}
-      />
-    </Grid>
+    
 
     
 
