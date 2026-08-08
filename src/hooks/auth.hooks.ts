@@ -16,8 +16,8 @@ export const useLogin = () => {
     onSuccess: async () =>{
         const data = await AuthService.getCurrentUser();
         console.log(data);
-        setUser(data.user);
-        queryClient.setQueryData(['user'], data.user);
+        setUser(data);
+        queryClient.setQueryData(['user'], data);
         navigate('/home'); 
     }
   });

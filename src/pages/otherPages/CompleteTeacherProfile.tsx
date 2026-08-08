@@ -105,6 +105,7 @@ const addressFields: Array<{ name: keyof Address; label: string }> = [
 
 const CompleteTeacherProfile = () => {
   const user = useAuthStore((state) => state.user);
+  console.log("usr",user)
 
   const {mutate : completeProfile, isPending,isSuccess} = useCompleteTeacherProfile();
     
