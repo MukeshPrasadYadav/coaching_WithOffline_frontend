@@ -1,20 +1,28 @@
 // src/pages/students/StudentBatchePage.tsx
 // src/pages/students/MyCoaching.tsx
-import { Add, FilterList, Refresh, UploadFile } from '@mui/icons-material';
+import { Add, FilterList, Refresh} from '@mui/icons-material';
 import { Button, Chip, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from '@mui/material';
 import { SearchIcon } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { Role, useAuthStore } from '../../store/auth.store';
 import { useDebounce } from '../../hooks/debounce';
-import { Navigate } from 'react-router-dom';
 import type { BatchFilter } from '../../services/BatchService';
 import { useGetBatches } from '../../hooks/batch.hooks';
-import BatchService from '../../services/BatchService';
+import CoachingAdmission from '../../Components/PanelsWithForms/CoachingAdmission';
+
+type ModalType = "Admission" | null;
+
+interface ModalState{
+  type: ModalType;
+  
+}
 
 const StudentBatchPage = () => {
 
      const [searchInput, setSearchInput] = useState("");           
         const debouncedSearch = useDebounce(searchInput, 400);
+
+        const [modal,setModal] = useState<ModalState>()
       
       const [filter, setFilter] = useState<BatchFilter>({
           search: "",
@@ -72,7 +80,7 @@ const StudentBatchPage = () => {
           <Button
            startIcon= {<Add />}
            variant="contained"
-        //    onClick={() => setModal({ type: "AddBatch" , params : {coachingId : ""}})}
+            onClick={() => setModal({ type: "Admission" })}
            >
             Admission
           </Button>
@@ -174,7 +182,7 @@ const StudentBatchPage = () => {
     }}
 />    
 </Paper>
-  {/* <BatchForm open = {modal.type === "AddBatch"} type="Add" batchId={null} closeModal={() => setModal({type: null , params:{batchId : ""}})} /> */}
+  <CoachingAdmission open ={modal?.type === "Admission"}  closeModal={() => setModal({type : null })} />
 </div>
 
 
