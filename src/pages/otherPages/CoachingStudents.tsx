@@ -1,139 +1,366 @@
 // src/pages/otherPages/CoachingStudents.tsx
-import { Add, FilterList, Refresh, UploadFile } from '@mui/icons-material'
-import { Button, CircularProgress, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from '@mui/material'
-import { SearchIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { Role, useAuthStore } from '../../store/auth.store'
-import StudentForm from '../../Components/PanelsWithForms/StudentForm'
-import { useExportStudents, useGetStudents } from '../../hooks/student.hook'
-import StudentService, { type StudentFilter, type Student } from '../../services/StudentService'
-import { useDebounce } from '../../hooks/debounce'
-import { useNavigate } from 'react-router-dom'
 
-type ModalType = "AddStudent" | "UpdateStudent" |  "RemoveStudent" | null;
+import {
+  Add,
+  FilterList,
+  Refresh,
+  UploadFile,
+} from "@mui/icons-material";
 
-interface ModalState{
+import {
+  Box,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
+
+import { Search } from "lucide-react";
+
+import {
+  useEffect,
+  useState,
+  type ChangeEvent,
+  type MouseEvent,
+} from "react";
+
+import { useNavigate } from "react-router-dom";
+
+import {
+  AppTable,
+  Button,
+} from "../../Components/ui";
+
+import StudentForm from "../../Components/PanelsWithForms/StudentForm";
+
+import { useGetStudents } from "../../hooks/student.hook";
+
+import StudentService, {
+  type Student,
+} from "../../services/StudentService";
+
+import { useDebounce } from "../../hooks/debounce";
+
+import {
+  Role,
+  useAuthStore,
+} from "../../store/auth.store";
+
+import type { TableColumn } from "../../Components/ui/Table";
+
+// ==========================================================
+// TYPES
+// ==========================================================
+
+type ModalType =
+  | "AddStudent"
+  | "UpdateStudent"
+  | "RemoveStudent"
+  | null;
+
+interface ModalState {
   type: ModalType;
-  params :{
-    studentId : string | null
+  params: {
+    studentId: string | null;
   };
+}
+
+interface StudentFilter {
+  search: string;
+  batch: string;
+  fromDate: string;
+  toDate: string;
+  pageNumber: number;
+  pageSize: number;
 }
 
 type StudentRow = Student & {
   joiningDate?: string;
 };
 
+
+
 const CoachingStudents = () => {
+  const navigate = useNavigate();
 
-const [searchInput, setSearchInput] = useState("");           
-  const debouncedSearch = useDebounce(searchInput, 400);
 
-const [filter, setFilter] = useState<StudentFilter>({
-    search: "",
-    batch: "",
-    fromDate: "",
-    toDate: "",
-    pageNumber: 0,
-    pageSize: 10,
-});
 
-useEffect(() => {
-    setFilter(prev => ({
+  const user = useAuthStore(
+    (state) => state.user
+  );
+
+
+
+  const [searchInput, setSearchInput] =
+    useState("");
+
+  const debouncedSearch = useDebounce(
+    searchInput,
+    400
+  );
+
+
+
+  const [filter, setFilter] =
+    useState<StudentFilter>({
+      search: "",
+      batch: "",
+      fromDate: "",
+      toDate: "",
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
+
+  const [modal, setModal] =
+    useState<ModalState>({
+      type: null,
+      params: {
+        studentId: null,
+      },
+    });
+
+
+
+  useEffect(() => {
+    setFilter((prev) => ({
       ...prev,
       search: debouncedSearch,
-      pageNumber: 0,           
+      pageNumber: 0,
     }));
   }, [debouncedSearch]);
 
 
 
-const { data, isLoading, error, refetch } = useGetStudents(filter);
-const user = useAuthStore((state) => state.user);
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+  } = useGetStudents(filter);
+
+  const students =
+    (data?.content ?? []) as StudentRow[];
+
+
+  const handleSearchChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    setSearchInput(event.target.value);
+  };
+
+
+
+  const handleAddStudent = () => {
+    setModal({
+      type: "AddStudent",
+      params: {
+        studentId: null,
+      },
+    });
+  };
+
+
+
+  const handleCloseModal = () => {
+    setModal({
+      type: null,
+      params: {
+        studentId: null,
+      },
+    });
+  };
+
+
+  const handlePageChange = (
+    _event: MouseEvent | null,
+    newPage: number
+  ) => {
+    setFilter((prev) => ({
+      ...prev,
+      pageNumber: newPage,
+    }));
+  };
+
+  const handleRowsPerPageChange = (
+    event: ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement
+    >
+  ) => {
+    setFilter((prev) => ({
+      ...prev,
+      pageSize: Number(event.target.value),
+      pageNumber: 0,
+    }));
+  };
+
+
+
+  const columns: TableColumn[] = [
+    {
+      id: "name",
+      label: "Name",
+      accessor: "name",
+      width: "35%",
+    },
+
+    {
+      id: "batch",
+      label: "Batch",
+      width: "35%",
+
+      render: (student) =>
+        student.batches
+          ?.map(
+            (batch) => batch.batchName
+          )
+          .join(", ") || "—",
+    },
+
+    {
+      id: "joiningDate",
+      label: "Joining Date",
+      width: "30%",
+
+      render: (student) =>
+        student.joiningDate
+          ? new Date(
+              student.joiningDate
+            ).toLocaleDateString("en-GB")
+          : "—",
+    },
+  ];
 
  
 
-
-      
-      
-    
-      const [modal,setModal] = useState<ModalState>({
-        type: null,
-        params :{
-          studentId: null
-        }
-      });
-
-      const navigate = useNavigate();
-
-      const students = (data?.content ?? []) as StudentRow[];
-      const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value);
-  };
-
-    
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      <div className="shrink-0">
-        <Typography variant="h4">Students</Typography>
-        <Typography sx={{ color: "text.secondary", mt: 0.5 }}>
-          Manage student records, batches, and joining details.
-        </Typography>
-      </div>
+    <Box
+      sx={{
+        width: "100%",
+      }}
+    >
+    
 
-      <Paper
+      <Box sx={{ mb: 3 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 800,
+            letterSpacing: "-0.03em",
+            color: "text.primary",
+          }}
+        >
+          Students
+        </Typography>
+
+        <Typography
+          variant="body2"
+          sx={{
+            mt: 0.75,
+            color: "text.secondary",
+          }}
+        >
+          Manage student records, batches,
+          and joining details.
+        </Typography>
+      </Box>
+
+ 
+
+      <Box
         sx={{
-          mt: 2,
-          p: 3,
-          flex: 1,
-          minHeight: 0,
-          display: "flex",
-          flexDirection: "column",
-          bgcolor: "#FFFFFF",
-          border: "1px solid #E5E7EB",
-          borderRadius: 4,
-          boxShadow: "0 4px 16px rgba(15,23,42,0.06)",
+          width: "100%",
+          bgcolor: "background.paper",
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 3,
+
+          p: {
+            xs: 2,
+            md: 2.5,
+          },
+
+          boxShadow:
+            "0 4px 16px rgba(15, 23, 42, 0.05)",
         }}
       >
-        <div className="flex shrink-0 flex-col gap-3 md:flex-row md:items-center md:justify-between">
+   
+
+        <div className="mb-5 flex w-full flex-col gap-3 md:flex-row md:items-center md:justify-between">
+
+
+
           <div className="flex flex-wrap items-center gap-2">
-            {user?.role === Role.ADMIN &&
+
+            {/* Add Student */}
+
+            {user?.role === Role.ADMIN && (
+              <Button
+                variant= "primary"
+                startIcon={<Add />}
+                onClick={handleAddStudent}
+              >
+                Add Student
+              </Button>
+            )}
+
+            {/* Filter */}
+
             <Button
-             startIcon= {<Add />}
-             variant="contained"
-             onClick ={ () => setModal({type :"AddStudent" , params :{studentId : null}})}>
-              Add Student
+              startIcon={<FilterList />}
+              variant= "outline"
+            >
+              Filter
             </Button>
-            
-            }
-            <Button startIcon={<FilterList />} variant="outlined">
-                        Filter
-                      </Button>
-            <Button onClick={() => refetch()} startIcon = {<Refresh />} variant="outlined">
+
+            {/* Refresh */}
+
+            <Button
+              onClick={() => refetch()}
+              startIcon={<Refresh />}
+              variant="outline"
+            >
               Refresh
             </Button>
-            
 
-            {user?.role === Role.ADMIN && 
-            <Button
-            onClick={() => StudentService.exportStudents(filter)}
-             startIcon={<UploadFile />} variant="outlined">
-             Export
-            </Button>}
+            {/* Export */}
+
+            {user?.role === Role.ADMIN && (
+              <Button
+                onClick={() =>
+                  StudentService.exportStudents(
+                    filter
+                  )
+                }
+                startIcon={<UploadFile />}
+                variant="outline"
+              >
+                Export
+              </Button>
+            )}
           </div>
 
-          <div className="w-full md:w-[320px]">
+          
+
+          <div className="w-full md:w-[320px] md:flex-shrink-0">
             <TextField
               fullWidth
               size="small"
               placeholder="Search students..."
-              value={searchInput}                    // ← controlled by immediate input
+              value={searchInput}
               onChange={handleSearchChange}
-              sx={{ "& .MuiInputBase-root": { height: 40 } }}
+              sx={{
+                "& .MuiInputBase-root": {
+                  height: 40,
+                  borderRadius: "8px",
+                },
+              }}
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <SearchIcon size={17} />
+                      <Search
+                        size={17}
+                      />
                     </InputAdornment>
                   ),
                 },
@@ -142,83 +369,57 @@ const user = useAuthStore((state) => state.user);
           </div>
         </div>
 
-        <TableContainer
-          sx={{
-            mt: 2,
-            flex: 1,
-            minHeight: 0,
-            height: "calc(100vh - 70px - 48px - 52px - 16px - 48px - 40px - 16px - 53px)",
-            overflowY: "auto",
-          }}
-        >
-          <Table stickyHeader>
+        
 
-            <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Batch</TableCell>
-              <TableCell>Joining Date</TableCell>
-            </TableRow>
-          </TableHead>
-            <TableBody>
-              {isLoading && (
-                <TableRow>
-                  <TableCell colSpan={4} align="center" sx={{ py: 8 }}>
-                    <CircularProgress size={24} />
-                  </TableCell>
-                </TableRow>
-              )}
+        <AppTable<StudentRow>
+          columns={columns}
+          rows={students}
+          getRowId={(student) =>
+            student.id
+          }
+          loading={isLoading}
+          error={Boolean(error)}
+          errorMessage="Unable to load students."
+          emptyMessage="No students found."
+          onRowClick={(student) =>
+            navigate(
+              `/students/${student.id}`
+            )
+          }
+          pagination
+          count={
+            data?.totalElements ?? 0
+          }
+          page={filter.pageNumber}
+          rowsPerPage={filter.pageSize}
+          rowsPerPageOptions={[
+            10,
+            25,
+            50,
+          ]}
+          onPageChange={
+            handlePageChange
+          }
+          onRowsPerPageChange={
+            handleRowsPerPageChange
+          }
+        />
+      </Box>
 
-              {!isLoading && error && (
-                <TableRow>
-                  <TableCell colSpan={4} align="center" sx={{ py: 8, color: "text.secondary" }}>
-                    Unable to load students.
-                  </TableCell>
-                </TableRow>
-              )}
+      
 
-              {!isLoading && !error && students.map((student) => (
-                <TableRow key={student.id} hover>
-                    <TableCell className = {'cursor-pointer'} onClick={() => navigate(`/students/${student.id}`)}>{student.name}</TableCell>
-                    <TableCell>  {student?.batches?.map(batch => batch.batchName).join(", ")}</TableCell>
-                    <TableCell>
-                        {student.joiningDate ? new Date(student.joiningDate).toLocaleDateString() : "-"}
-                    </TableCell>
-                </TableRow>
+      <StudentForm
+        open={
+          modal.type === "AddStudent"
+        }
+        type="Add"
+        studentId={null}
+        closeModal={
+          handleCloseModal
+        }
+      />
+    </Box>
+  );
+};
 
-            ))}
-          </TableBody>
-          </Table>
-        </TableContainer>
-
-<TablePagination
-    count={data?.totalElements ?? 0}
-    page={filter.pageNumber}
-    rowsPerPage={filter.pageSize}
-    rowsPerPageOptions={[10, 25, 50]}
-    onPageChange={(_, newPage) => {
-        setFilter(prev => ({
-            ...prev,
-            pageNumber: newPage,
-        }));
-    }}
-    onRowsPerPageChange={(event) => {
-        setFilter(prev => ({
-            ...prev,
-            pageSize: Number(event.target.value),
-            pageNumber: 0,
-        }));
-    }}
-/>    
-
-
- </Paper>
-
-  <StudentForm open={modal.type === "AddStudent" } type= "Add" studentId={null} closeModal={() => setModal({type : null , params :{studentId : ""}})}/>
-</div>
-
-
-  )
-}
-
-export default CoachingStudents
+export default CoachingStudents;

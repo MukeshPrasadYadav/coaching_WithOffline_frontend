@@ -1,145 +1,449 @@
 // src/pages/otherPages/CoachingTeachers.tsx
 
-import { Add, FilterList, Refresh, UploadFile } from '@mui/icons-material'
-import { Button, CircularProgress, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from '@mui/material'
-import { SearchIcon } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
-import { Role, useAuthStore } from '../../store/auth.store'
-import { useDebounce } from '../../hooks/debounce'
-import type { BatchRecord } from '../../services/StudentService'
-import {  useGetTeachers } from '../../hooks/teacher.hooks'
-import type { TeacherFilter } from '../../services/TeacherService'
-import TeacherService from '../../services/TeacherService'
-import ManageTeacher from '../../Components/PanelsWithForms/ManageTeacher'
+import {
+  Add,
+  FilterList,
+  Refresh,
+  UploadFile,
+} from "@mui/icons-material";
 
-type ModalType = "AddTeacher" | "UpdateTeacher" |  "RemoveTeacher" |null;
+import {
+  Box,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
 
-interface ModalState{
+import { Search } from "lucide-react";
+
+import {
+  useEffect,
+  useState,
+  type ChangeEvent,
+  type MouseEvent,
+} from "react";
+
+import { useNavigate } from "react-router-dom";
+
+import {
+  AppTable,
+  Button,
+} from "../../Components/ui";
+
+import ManageTeacher from "../../Components/PanelsWithForms/ManageTeacher";
+
+import { useGetTeachers } from "../../hooks/teacher.hooks";
+
+import TeacherService, {
+  type TeacherFilter,
+} from "../../services/TeacherService";
+
+import type { BatchRecord } from "../../services/StudentService";
+
+import { useDebounce } from "../../hooks/debounce";
+
+import {
+  Role,
+  useAuthStore,
+} from "../../store/auth.store";
+
+import type { TableColumn } from "../../Components/ui/Table";
+
+// ==========================================================
+// TYPES
+// ==========================================================
+
+type ModalType =
+  | "AddTeacher"
+  | "UpdateTeacher"
+  | "RemoveTeacher"
+  | null;
+
+interface ModalState {
   type: ModalType;
-  params :{
-    teacherId : string
+
+  params: {
+    teacherId: string | null;
   };
 }
 
-export interface Teacher{
+export interface Teacher {
   id: string;
-  name : string;
-  contactNumber ?: string;
-    email ?: string;
-    degrees ?: string[];
-    experience ?: number | '';
-    batches?: BatchRecord[];
-    subjects ?: string[];
+  name: string;
+  contactNumber?: string;
+  email?: string;
+  degrees?: string[];
+  experience?: number | "";
+  batches?: BatchRecord[];
+  subjects?: string[];
 }
 
 type TeacherRow = Teacher & {
   joiningDate?: string;
 };
 
+// ==========================================================
+// COMPONENT
+// ==========================================================
+
 const CoachingTeachers = () => {
-        const user = useAuthStore((state) => state.user);
+  const navigate = useNavigate();
 
-        
-        const [searchInput, setSearchInput] = useState("");           
-          const debouncedSearch = useDebounce(searchInput, 400);
-        
-        const [filter, setFilter] = useState<TeacherFilter>({
-            search: "",
-            subject: "",
-            degree: "",
-            batch: "",
-            fromDate: "",
-            toDate: "",
-            pageNumber: 0,
-            pageSize: 10,
-        });
-        
-        useEffect(() => {
-            setFilter(prev => ({
-              ...prev,
-              search: debouncedSearch,
-              pageNumber: 0,           
-            }));
-          }, [debouncedSearch]);
-      
-      const { data, isLoading, error, refetch } = useGetTeachers(filter);
+  // ========================================================
+  // AUTH
+  // ========================================================
 
-      const teachers = (data?.content ?? []) as TeacherRow[];
-    
-      const [modal,setModal] = useState<ModalState>({
-        type: null,
-        params :{
-          teacherId: ""
-        }
-      });
+  const user = useAuthStore(
+    (state) => state.user
+  );
 
-       const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value);
+  // ========================================================
+  // SEARCH
+  // ========================================================
+
+  const [searchInput, setSearchInput] =
+    useState("");
+
+  const debouncedSearch = useDebounce(
+    searchInput,
+    400
+  );
+
+  // ========================================================
+  // FILTER
+  // ========================================================
+
+  const [filter, setFilter] =
+    useState<TeacherFilter>({
+      search: "",
+      subject: "",
+      degree: "",
+      batch: "",
+      fromDate: "",
+      toDate: "",
+      pageNumber: 0,
+      pageSize: 10,
+    });
+
+  // ========================================================
+  // MODAL
+  // ========================================================
+
+  const [modal, setModal] =
+    useState<ModalState>({
+      type: null,
+
+      params: {
+        teacherId: null,
+      },
+    });
+
+  // ========================================================
+  // SEARCH DEBOUNCE
+  // ========================================================
+
+  useEffect(() => {
+    setFilter((prev) => ({
+      ...prev,
+
+      search: debouncedSearch,
+
+      pageNumber: 0,
+    }));
+  }, [debouncedSearch]);
+
+  // ========================================================
+  // GET TEACHERS
+  // ========================================================
+
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+  } = useGetTeachers(filter);
+
+  const teachers =
+    (data?.content ?? []) as TeacherRow[];
+
+  // ========================================================
+  // SEARCH HANDLER
+  // ========================================================
+
+  const handleSearchChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    setSearchInput(event.target.value);
   };
-    
-  return (
-    <div className="flex h-full min-h-0 flex-col">
-      <div className="shrink-0">
-        <Typography variant="h4">Teachers</Typography>
-        <Typography sx={{ color: "text.secondary", mt: 0.5 }}>
-          Manage teacher records, batches, and joining details.
-        </Typography>
-      </div>
 
-      <Paper
+  // ========================================================
+  // ADD TEACHER
+  // ========================================================
+
+  const handleAddTeacher = () => {
+    setModal({
+      type: "AddTeacher",
+
+      params: {
+        teacherId: null,
+      },
+    });
+  };
+
+  // ========================================================
+  // CLOSE MODAL
+  // ========================================================
+
+  const handleCloseModal = () => {
+    setModal({
+      type: null,
+
+      params: {
+        teacherId: null,
+      },
+    });
+  };
+
+  // ========================================================
+  // PAGE CHANGE
+  // ========================================================
+
+  const handlePageChange = (
+    _event: MouseEvent | null,
+    newPage: number
+  ) => {
+    setFilter((prev) => ({
+      ...prev,
+
+      pageNumber: newPage,
+    }));
+  };
+
+  // ========================================================
+  // ROWS PER PAGE
+  // ========================================================
+
+  const handleRowsPerPageChange = (
+    event: ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement
+    >
+  ) => {
+    setFilter((prev) => ({
+      ...prev,
+
+      pageSize: Number(
+        event.target.value
+      ),
+
+      pageNumber: 0,
+    }));
+  };
+
+  // ========================================================
+  // TABLE COLUMNS
+  // ========================================================
+
+  const columns: TableColumn[] = [
+    {
+      id: "name",
+      label: "Name",
+      accessor: "name",
+      width: "30%",
+    },
+
+    {
+      id: "batch",
+      label: "Batch",
+      width: "25%",
+
+      render: (teacher) =>
+        teacher.batches
+          ?.map(
+            (batch) => batch.batchName
+          )
+          .join(", ") || "—",
+    },
+
+    {
+      id: "experience",
+      label: "Experience",
+      width: "20%",
+
+      render: (teacher) => {
+        if (
+          teacher.experience === undefined ||
+          teacher.experience === null ||
+          teacher.experience === ""
+        ) {
+          return "—";
+        }
+
+        return `${teacher.experience} ${
+          teacher.experience === 1
+            ? "year"
+            : "years"
+        }`;
+      },
+    },
+
+    {
+      id: "joiningDate",
+      label: "Joining Date",
+      width: "25%",
+
+      render: (teacher) =>
+        teacher.joiningDate
+          ? new Date(
+              teacher.joiningDate
+            ).toLocaleDateString("en-GB")
+          : "—",
+    },
+  ];
+
+  // ========================================================
+  // RENDER
+  // ========================================================
+
+  return (
+    <Box
+      sx={{
+        width: "100%",
+      }}
+    >
+      {/* ====================================================
+          PAGE HEADER
+      ==================================================== */}
+
+      <Box sx={{ mb: 3 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 800,
+            letterSpacing: "-0.03em",
+            color: "text.primary",
+          }}
+        >
+          Teachers
+        </Typography>
+
+        <Typography
+          variant="body2"
+          sx={{
+            mt: 0.75,
+            color: "text.secondary",
+          }}
+        >
+          Manage teachers, assigned batches,
+          experience, and joining details.
+        </Typography>
+      </Box>
+
+      {/* ====================================================
+          MAIN CONTENT CARD
+      ==================================================== */}
+
+      <Box
         sx={{
-          mt: 2,
-          p: 3,
-          flex: 1,
-          minHeight: 0,
-          display: "flex",
-          flexDirection: "column",
-          bgcolor: "#FFFFFF",
-          border: "1px solid #E5E7EB",
-          borderRadius: 4,
-          boxShadow: "0 4px 16px rgba(15,23,42,0.06)",
+          width: "100%",
+
+          bgcolor: "background.paper",
+
+          border: "1px solid",
+          borderColor: "divider",
+
+          borderRadius: 3,
+
+          p: {
+            xs: 2,
+            md: 2.5,
+          },
+
+          boxShadow:
+            "0 4px 16px rgba(15, 23, 42, 0.05)",
         }}
       >
-        <div className="flex shrink-0 flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        {/* ==================================================
+            TOOLBAR
+        ================================================== */}
+
+        <div className="mb-5 flex w-full flex-col gap-3 md:flex-row md:items-center md:justify-between">
+
+          {/* ================================================
+              LEFT — ACTION BUTTONS
+          ================================================= */}
+
           <div className="flex flex-wrap items-center gap-2">
-            {user?.role === Role.ADMIN &&
+
+            {/* Add Teacher */}
+
+            {user?.role === Role.ADMIN && (
+              <Button
+                variant="primary"
+                startIcon={<Add />}
+                onClick={handleAddTeacher}
+              >
+                Add Teacher
+              </Button>
+            )}
+
+            {/* Filter */}
+
             <Button
-             startIcon= {<Add />}
-             variant="contained"
-             onClick ={ () => setModal({type : "AddTeacher" , params: {teacherId : ""}})}>
-              Add Teacher
+              startIcon={<FilterList />}
+              variant="outline"
+            >
+              Filter
             </Button>
-            
-            }
-            <Button startIcon={<FilterList />} variant="outlined">
-                        Filter
-                      </Button>
-            <Button onClick={() => refetch()} startIcon = {<Refresh />} variant="outlined">
+
+            {/* Refresh */}
+
+            <Button
+              onClick={() => refetch()}
+              startIcon={<Refresh />}
+              variant="outline"
+            >
               Refresh
             </Button>
-            
 
-            {user?.role === Role.ADMIN && 
-            <Button
-           onClick={() => TeacherService.exportTeachers(filter)}
-             startIcon={<UploadFile />} variant="outlined">
-             Export
-            </Button>}
+            {/* Export */}
+
+            {user?.role === Role.ADMIN && (
+              <Button
+                onClick={() =>
+                  TeacherService.exportTeachers(
+                    filter
+                  )
+                }
+                startIcon={<UploadFile />}
+                variant="outline"
+              >
+                Export
+              </Button>
+            )}
           </div>
 
-          <div className="w-full md:w-[320px]">
+          {/* ================================================
+              RIGHT — SEARCH
+          ================================================= */}
+
+          <div className="w-full md:w-[320px] md:flex-shrink-0">
             <TextField
               fullWidth
               size="small"
               placeholder="Search teachers..."
-              value={searchInput}                    // ← controlled by immediate input
+              value={searchInput}
               onChange={handleSearchChange}
-              sx={{ "& .MuiInputBase-root": { height: 40 } }}
+              sx={{
+                "& .MuiInputBase-root": {
+                  height: 40,
+                  borderRadius: "8px",
+                },
+              }}
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <SearchIcon size={17} />
+                      <Search size={17} />
                     </InputAdornment>
                   ),
                 },
@@ -148,83 +452,77 @@ const CoachingTeachers = () => {
           </div>
         </div>
 
-        <TableContainer
-          sx={{
-            mt: 2,
-            flex: 1,
-            minHeight: 0,
-            height: "calc(100vh - 70px - 48px - 52px - 16px - 48px - 40px - 16px - 53px)",
-            overflowY: "auto",
-          }}
-        >
-          <Table stickyHeader>
+        {/* ==================================================
+            TEACHERS TABLE
+        ================================================== */}
 
-            <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Batch</TableCell>
-              <TableCell>Experience</TableCell>
-              <TableCell>Joining Date</TableCell>
-            </TableRow>
-          </TableHead>
-            <TableBody>
-              {isLoading && (
-                <TableRow>
-                  <TableCell colSpan={4} align="center" sx={{ py: 8 }}>
-                    <CircularProgress size={24} />
-                  </TableCell>
-                </TableRow>
-              )}
+        <AppTable<TeacherRow>
+          columns={columns}
+          rows={teachers}
 
-              {!isLoading && error && (
-                <TableRow>
-                  <TableCell colSpan={4} align="center" sx={{ py: 8, color: "text.secondary" }}>
-                    Unable to load teachers.
-                  </TableCell>
-                </TableRow>
-               )} 
+          getRowId={(teacher) =>
+            teacher.id
+          }
 
-              {!isLoading && !error && teachers.map((teacher) => (
-                <TableRow key={teacher?.id ?? ""}  hover>
-                    <TableCell>{teacher?.name ?? ""}</TableCell>
-                    <TableCell>{teacher?.batches?.map(batch => batch.batchName).join(", ")}</TableCell>
-                    <TableCell>{teacher?.experience ?? ""}</TableCell>
-                    <TableCell>
-                        {teacher.joiningDate ? new Date(teacher.joiningDate).toLocaleDateString() : "-"}
-                    </TableCell>
-                </TableRow>
+          loading={isLoading}
 
-            ))}
-          </TableBody>
-          </Table>
-        </TableContainer>
+          error={Boolean(error)}
 
-<TablePagination
-    count={data?.totalElements ?? 0}
-    page={filter.pageNumber}
-    rowsPerPage={filter.pageSize}
-    rowsPerPageOptions={[10, 25, 50]}
-    onPageChange={(_, newPage) => {
-        setFilter(prev => ({
-            ...prev,
-            pageNumber: newPage,
-        }));
-    }}
-    onRowsPerPageChange={(event) => {
-        setFilter(prev => ({
-            ...prev,
-            pageSize: Number(event.target.value),
-            pageNumber: 0,
-        }));
-    }}
-/>    
- </Paper>
-<ManageTeacher open={modal.type === "AddTeacher" } type= "Add" teacherId={null} closeModal={() => setModal({type : null , params :{teacherId : ""}})}/>
+          errorMessage="Unable to load teachers."
+
+          emptyMessage="No teachers found."
+
+          onRowClick={(teacher) =>
+            navigate(
+              `/teachers/${teacher.id}`
+            )
+          }
+
+          pagination
+
+          count={
+            data?.totalElements ?? 0
+          }
+
+          page={filter.pageNumber}
+
+          rowsPerPage={
+            filter.pageSize
+          }
+
+          rowsPerPageOptions={[
+            10,
+            25,
+            50,
+          ]}
+
+          onPageChange={
+            handlePageChange
+          }
+
+          onRowsPerPageChange={
+            handleRowsPerPageChange
+          }
+        />
+      </Box>
+
   
-</div>
 
+      <ManageTeacher
+        open={
+          modal.type === "AddTeacher"
+        }
 
-  )
-}
+        type="Add"
 
-export default CoachingTeachers
+        teacherId={null}
+
+        closeModal={
+          handleCloseModal
+        }
+      />
+    </Box>
+  );
+};
+
+export default CoachingTeachers;

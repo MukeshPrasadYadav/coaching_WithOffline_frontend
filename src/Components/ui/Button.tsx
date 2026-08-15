@@ -1,62 +1,109 @@
 // src/Components/ui/Button.tsx
-import type { ButtonProps as MuiButtonProps } from '@mui/material/Button';
-import { Button as MuiButton } from '@mui/material';
 
-type AppButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'soft';
+import { forwardRef } from "react";
+import {
+  Button as MuiButton,
+  type ButtonProps as MuiButtonProps,
+} from "@mui/material";
 
-export interface ButtonProps extends Omit<MuiButtonProps, 'variant' | 'color'> {
+type AppButtonVariant =
+  | "primary"
+  | "secondary"
+  | "outline"
+  | "ghost"
+  | "soft";
+
+export interface ButtonProps
+  extends Omit<MuiButtonProps, "variant" | "color"> {
   variant?: AppButtonVariant;
 }
 
-export function Button({ variant = 'primary', sx, children, ...props }: ButtonProps) {
-  const variantProps =
-    variant === 'outline'
-      ? { variant: 'outlined' as const }
-      : variant === 'ghost'
-        ? { variant: 'text' as const }
-        : { variant: 'contained' as const };
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ variant = "primary", sx, children, ...props }, ref) => {
+    // Map custom variants to MUI variants
+    const muiVariant: MuiButtonProps["variant"] =
+      variant === "outline"
+        ? "outlined"
+        : variant === "ghost"
+          ? "text"
+          : "contained";
 
-  const toneSx =
-    variant === 'secondary'
-      ? {
-          bgcolor: 'secondary.main',
-          color: 'secondary.contrastText',
-          '&:hover': { bgcolor: 'secondary.dark' },
-        }
-      : variant === 'soft'
-        ? {
-            bgcolor: (theme: any) => theme.palette.action.hover,
-            color: 'text.primary',
-            '&:hover': {
-              bgcolor: (theme: any) => theme.palette.action.selected,
-            },
-          }
-        : variant === 'ghost'
-          ? {
-              color: 'text.primary',
-            }
-          : {};
+    // Custom styling for each variant
+    const variantSx = {
+      primary: {
+        bgcolor: "primary.main",
+        color: "primary.contrastText",
 
-  return (
-    <MuiButton
-      disableElevation
-      {...variantProps}
-      sx={[
-        {
-          borderRadius: 10,
-          px: 2,
-          py: 1,
-          textTransform: 'none',
-          fontWeight: 600,
+        "&:hover": {
+          bgcolor: "primary.dark",
         },
-        toneSx,
-        ...(Array.isArray(sx) ? sx : [sx]),
-      ]}
-      {...props}
-    >
-      {children}
-    </MuiButton>
-  );
-}
+      },
+
+      secondary: {
+        bgcolor: "secondary.main",
+        color: "secondary.contrastText",
+
+        "&:hover": {
+          bgcolor: "secondary.dark",
+        },
+      },
+
+      outline: {
+        borderColor: "divider",
+        color: "text.primary",
+
+        "&:hover": {
+          bgcolor: "action.hover",
+          borderColor: "text.primary",
+        },
+      },
+
+      ghost: {
+        color: "text.primary",
+
+        "&:hover": {
+          bgcolor: "action.hover",
+        },
+      },
+
+      soft: {
+        bgcolor: "action.hover",
+        color: "text.primary",
+        boxShadow: "none",
+
+        "&:hover": {
+          bgcolor: "action.selected",
+        },
+      },
+    }[variant];
+
+    return (
+      <MuiButton
+        ref={ref}
+        variant={muiVariant}
+        disableElevation
+        sx={[
+          {
+            borderRadius: "12px",
+            px: 2.5,
+            py: 1,
+            textTransform: "none",
+            fontWeight: 600,
+            fontSize: "0.875rem",
+            letterSpacing: "0.01em",
+            transition: "all 0.2s ease",
+          },
+          variantSx,
+          ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
+        ]}
+        {...props}
+      >
+        {children}
+      </MuiButton>
+    );
+  }
+);
+
+Button.displayName = "Button";
 
 export default Button;

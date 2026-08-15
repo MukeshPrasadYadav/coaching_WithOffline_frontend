@@ -8,6 +8,10 @@ export interface SignInRequest{
     password : string;
 }
 
+export interface CompleteProfile {
+    
+}
+
 export interface SignUpReqest extends SignInRequest{
     role : Role
 }
@@ -21,6 +25,8 @@ const AuthService = {
     signup: async (request : SignUpReqest ) => await post<SignUpReqest,void>(`${root}/signup`, request),
 
     getCurrentUser: async () => await get<User>(`${root}/get/me`),
+
+    
 
     logout : async () => await post(`${root}/signout`),
 
