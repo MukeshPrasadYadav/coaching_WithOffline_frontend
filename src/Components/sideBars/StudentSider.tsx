@@ -1,27 +1,27 @@
 // src/Components/sideBars/StudentSider.tsx
 
 import {
+  Box,
   Drawer,
+  IconButton,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
   Typography,
-  Box,
-  styled,
-  IconButton,
 } from "@mui/material";
+
 import {
+  BookOpen,
   ChevronRight,
   LayoutDashboard,
-  User,
-  School,
-  BookOpen,
-  Bell,
-  Settings,
   LogOut,
+  User,
+  X,
 } from "lucide-react";
+
 import { NavLink } from "react-router-dom";
+
 import { useLogout } from "../../hooks/auth.hooks";
 
 const drawerWidth = 260;
@@ -50,180 +50,308 @@ const menu = [
         text: "My Batch",
         icon: BookOpen,
         path: "/batches",
-      }
-      
-      
+      },
     ],
   },
-  // {
-  //   section: "System",
-  //   items: [
-  //     {
-  //       text: "Settings",
-  //       icon: Settings,
-  //       path: "/student/settings",
-  //     },
-  //   ],
-  // },
 ];
 
-const DrawerHeader = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  padding: theme.spacing(2),
-}));
+const StudentSider = ({
+  open,
+  isDesktop,
+  onClose,
+}: SiderProp) => {
+  const {
+    mutate: logout,
+    isPending,
+  } = useLogout();
 
-const StudentSider = ({ open, isDesktop, onClose }: SiderProp) => {
-  const { mutate: logout, isPending } = useLogout();
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <Drawer
       variant={isDesktop ? "permanent" : "temporary"}
       open={open}
       onClose={onClose}
-      ModalProps={{ keepMounted: true }}
+      ModalProps={{
+        keepMounted: true,
+      }}
       sx={{
-        width: open ? drawerWidth : 0,
+        width: drawerWidth,
         flexShrink: 0,
+
         "& .MuiDrawer-paper": {
           width: drawerWidth,
           boxSizing: "border-box",
-          borderRight: 0,
-          bgcolor: "#0F172A",
-          color: "#CBD5E1",
-          px: 1.5,
+
+          display: "flex",
+          flexDirection: "column",
+
+          bgcolor: "background.paper",
+          color: "text.primary",
+
+          borderRight: "1px solid",
+          borderColor: "divider",
         },
       }}
     >
-      <DrawerHeader>
+      {/* =====================================================
+          HEADER
+      ====================================================== */}
+
+      <Box
+        sx={{
+          height: 72,
+
+          px: 2,
+
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+
+          borderBottom: "1px solid",
+          borderColor: "divider",
+        }}
+      >
         <Box>
           <Typography
             sx={{
-              color: "#fff",
-              fontWeight: 700,
-              fontSize: 17,
+              fontSize: "0.95rem",
+              fontWeight: 800,
+              letterSpacing: "-0.01em",
+              color: "text.primary",
+            }}
+          >
+            CoachingHub
+          </Typography>
+
+          <Typography
+            sx={{
+              mt: 0.5,
+
+              fontSize: "0.7rem",
+              fontWeight: 500,
+
+              color: "text.secondary",
             }}
           >
             Student Portal
           </Typography>
-
-          <Typography
-            sx={{
-              color: "#94A3B8",
-              fontSize: 12,
-            }}
-          >
-            Learning Dashboard
-          </Typography>
         </Box>
 
-        <IconButton
-          onClick={onClose}
-          sx={{
-            color: "#CBD5E1",
-            display: isDesktop ? "none" : "inline-flex",
-          }}
-        >
-          <ChevronRight size={20} />
-        </IconButton>
-      </DrawerHeader>
+        {/* Mobile close */}
 
-      {menu.map((group) => (
-        <Box key={group.section} sx={{ mt: 1 }}>
-          <Typography
-            variant="caption"
+        {!isDesktop && (
+          <IconButton
+            onClick={onClose}
+            aria-label="Close sidebar"
+            size="small"
             sx={{
-              px: 1.5,
-              py: 1,
-              display: "block",
-              color: "#64748B",
-              fontWeight: 700,
-              textTransform: "uppercase",
+              color: "text.secondary",
+              borderRadius: 2,
+
+              "&:hover": {
+                bgcolor: "action.hover",
+                color: "text.primary",
+              },
             }}
           >
-            {group.section}
-          </Typography>
+            <X size={18} />
+          </IconButton>
+        )}
+      </Box>
 
-          <List>
-            {group.items.map((item) => (
-              <ListItemButton
-                key={item.text}
-                component={NavLink}
-                to={item.path}
-                onClick={!isDesktop ? onClose : undefined}
-                sx={{
-                  minHeight: 42,
-                  borderRadius: 2.5,
-                  color: "#CBD5E1",
-                  mb: 0.25,
-                  px: 1.5,
+      {/* =====================================================
+          NAVIGATION
+      ====================================================== */}
 
-                  "&:hover": {
-                    bgcolor: "rgba(255,255,255,0.08)",
-                    color: "#fff",
-                  },
+      <Box
+        sx={{
+          flex: 1,
 
-                  "&.active": {
-                    bgcolor: "#1E40AF",
-                    color: "#fff",
+          overflowY: "auto",
 
-                    "& .MuiListItemIcon-root": {
-                      color: "#fff",
-                    },
-                  },
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    color: "inherit",
-                    minWidth: 36,
-                  }}
-                >
-                  <item.icon size={19} />
-                </ListItemIcon>
+          px: 1.25,
+          py: 2,
 
-                <ListItemText
-                  primary={
-                    <Typography
-                      component="span"
+          "&::-webkit-scrollbar": {
+            width: 5,
+          },
+
+          "&::-webkit-scrollbar-thumb": {
+            bgcolor: "action.disabled",
+            borderRadius: 10,
+          },
+        }}
+      >
+        {menu.map((group) => (
+          <Box key={group.section}>
+            {/* Section */}
+
+            <Typography
+              variant="caption"
+              sx={{
+                display: "block",
+
+                px: 1.25,
+                mb: 0.75,
+
+                color: "text.disabled",
+
+                fontSize: "0.68rem",
+                fontWeight: 700,
+
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
+            >
+              {group.section}
+            </Typography>
+
+            {/* Items */}
+
+            <List
+              disablePadding
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 0.5,
+              }}
+            >
+              {group.items.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <ListItemButton
+                    key={item.text}
+                    component={NavLink}
+                    to={item.path}
+                    onClick={
+                      !isDesktop
+                        ? onClose
+                        : undefined
+                    }
+                    sx={{
+                      minHeight: 44,
+
+                      px: 1.25,
+
+                      borderRadius: 2,
+
+                      color: "text.secondary",
+
+                      transition:
+                        "background-color 160ms ease, color 160ms ease",
+
+                      "&:hover": {
+                        bgcolor: "action.hover",
+                        color: "text.primary",
+                      },
+
+                      "&.active": {
+                        bgcolor: "primary.main",
+                        color:
+                          "primary.contrastText",
+
+                        boxShadow:
+                          "0 4px 12px rgba(37, 99, 235, 0.18)",
+
+                        "& .MuiListItemIcon-root": {
+                          color: "inherit",
+                        },
+
+                        "& .nav-arrow": {
+                          opacity: 1,
+                          transform:
+                            "translateX(0)",
+                        },
+                      },
+                    }}
+                  >
+                    <ListItemIcon
                       sx={{
-                        fontSize: 14,
-                        fontWeight: 500,
+                        minWidth: 36,
+                        color: "inherit",
                       }}
                     >
-                      {item.text}
-                    </Typography>
-                  }
-                />
-              </ListItemButton>
-            ))}
-          </List>
-        </Box>
-      ))}
+                      <Icon
+                        size={18}
+                        strokeWidth={2}
+                      />
+                    </ListItemIcon>
 
-      <Box sx={{ mt: "auto", py: 2 }}>
+                    <ListItemText
+                      primary={
+                        <Typography
+                          component="span"
+                          sx={{
+                            fontSize: "0.875rem",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {item.text}
+                        </Typography>
+                      }
+                    />
+
+                    <ChevronRight
+                      className="nav-arrow"
+                      size={15}
+                      style={{
+                        opacity: 0,
+                        transform:
+                          "translateX(-4px)",
+                        transition:
+                          "opacity 160ms ease, transform 160ms ease",
+                      }}
+                    />
+                  </ListItemButton>
+                );
+              })}
+            </List>
+          </Box>
+        ))}
+      </Box>
+
+      {/* =====================================================
+          FOOTER
+      ====================================================== */}
+
+      <Box
+        sx={{
+          px: 1.25,
+          py: 1.5,
+
+          borderTop: "1px solid",
+          borderColor: "divider",
+        }}
+      >
         <ListItemButton
           disabled={isPending}
-          onClick={() => logout()}
+          onClick={handleLogout}
           sx={{
-            minHeight: 42,
-            borderRadius: 2.5,
-            color: "#CBD5E1",
+            minHeight: 44,
+
+            px: 1.25,
+
+            borderRadius: 2,
+
+            color: "text.secondary",
 
             "&:hover": {
-              bgcolor: "rgba(255,255,255,0.08)",
-              color: "#fff",
+              bgcolor: "action.hover",
+              color: "error.main",
             },
           }}
         >
           <ListItemIcon
             sx={{
-              color: "inherit",
               minWidth: 36,
+              color: "inherit",
             }}
           >
-            <LogOut size={19} />
+            <LogOut size={18} />
           </ListItemIcon>
 
           <ListItemText
@@ -231,11 +359,13 @@ const StudentSider = ({ open, isDesktop, onClose }: SiderProp) => {
               <Typography
                 component="span"
                 sx={{
-                  fontSize: 14,
-                  fontWeight: 500,
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
                 }}
               >
-                Logout
+                {isPending
+                  ? "Logging out..."
+                  : "Logout"}
               </Typography>
             }
           />

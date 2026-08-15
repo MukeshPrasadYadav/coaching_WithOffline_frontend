@@ -1,36 +1,31 @@
-// src/Components/sideBars/CoachingSider.tsx
 import {
+  Box,
   Drawer,
+  IconButton,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
   Typography,
-  Box,
-  styled,
-  IconButton,
 } from "@mui/material";
 
 import {
-  BarChart3,
-  Bell,
   BookOpen,
-  CalendarCheck,
   ChevronRight,
   GraduationCap,
   LayoutDashboard,
   LogOut,
-  MessageSquare,
-  ReceiptIndianRupee,
-  Settings,
   Users,
+  X,
 } from "lucide-react";
+
 import { NavLink } from "react-router-dom";
+
 import { useLogout } from "../../hooks/auth.hooks";
 
 const drawerWidth = 260;
 
- export interface SiderProp{
+export interface SiderProp {
   open: boolean;
   isDesktop: boolean;
   onClose: () => void;
@@ -40,163 +35,324 @@ const menu = [
   {
     section: "Workspace",
     items: [
-      { text: "Dashboard", icon: LayoutDashboard, path: "/home" },
-      { text: "Students", icon: GraduationCap, path: "/students" },
-      { text: "Teachers", icon: Users, path: "/teachers" },
-     // { text: "Attendance", icon: CalendarCheck, path: "/attendance" },
-      { text: "Batches", icon: BookOpen, path: "/batches" },
+      {
+        text: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/home",
+      },
+      {
+        text: "Students",
+        icon: GraduationCap,
+        path: "/students",
+      },
+      {
+        text: "Teachers",
+        icon: Users,
+        path: "/teachers",
+      },
+      {
+        text: "Batches",
+        icon: BookOpen,
+        path: "/batches",
+      },
     ],
   },
-  // {
-  //   section: "Management",
-  //   items: [
-  //     { text: "Fees", icon: ReceiptIndianRupee, path: "/fees" },
-  //     { text: "Exams", icon: Bell, path: "/exams" },
-  //     { text: "Messages", icon: MessageSquare, path: "/messages" },
-  //     { text: "Reports", icon: BarChart3, path: "/reports" },
-  //   ],
-  // },
-  // {
-  //   section: "System",
-  //   items: [
-  //     { text: "Settings", icon: Settings, path: "/settings" },
-  //   ],
-  // },
 ];
 
-export const DrawerHeader = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "flex-end",
-  padding: theme.spacing(2),
-}));
-
-const CoachingSider = ({ open, isDesktop, onClose } : SiderProp) => {
+const CoachingSider = ({
+  open,
+  isDesktop,
+  onClose,
+}: SiderProp) => {
   const { mutate: logout, isPending } = useLogout();
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <Drawer
       variant={isDesktop ? "permanent" : "temporary"}
       open={open}
       onClose={onClose}
-      ModalProps={{ keepMounted: true }}
+      ModalProps={{
+        keepMounted: true,
+      }}
       sx={{
-        width: open ? drawerWidth : 0,
+        width: drawerWidth,
         flexShrink: 0,
+
         "& .MuiDrawer-paper": {
           width: drawerWidth,
           boxSizing: "border-box",
-          borderRight: 0,
-          bgcolor: "#0F172A",
-          color: "#CBD5E1",
-          px: 1.5,
+
+          display: "flex",
+          flexDirection: "column",
+
+          borderRight: "1px solid",
+          borderColor: "divider",
+
+          bgcolor: "background.paper",
+          color: "text.primary",
         },
       }}
     >
-      <DrawerHeader sx={{ justifyContent: "space-between", minHeight: 70, px: 1 }}>
+      {/* =====================================================
+          HEADER
+      ====================================================== */}
+
+      <Box
+        sx={{
+          height: 72,
+          px: 2,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+
+          borderBottom: "1px solid",
+          borderColor: "divider",
+        }}
+      >
         <Box>
-          <Typography sx={{ color: "#FFFFFF", fontWeight: 700, fontSize: 17, lineHeight: 1 }}>
-            Coaching Admin
+          <Typography
+            sx={{
+              fontSize: "0.95rem",
+              fontWeight: 800,
+              letterSpacing: "-0.01em",
+              color: "text.primary",
+            }}
+          >
+            CoachingHub
           </Typography>
-          <Typography sx={{ color: "#94A3B8", fontSize: 12, mt: 0.75 }}>
+
+          <Typography
+            sx={{
+              mt: 0.5,
+              fontSize: "0.7rem",
+              fontWeight: 500,
+              color: "text.secondary",
+            }}
+          >
             Management System
           </Typography>
         </Box>
-        <IconButton
-          aria-label="Close sidebar"
-          onClick={onClose}
-          sx={{
-            color: "#CBD5E1",
-            display: isDesktop ? "none" : "inline-flex",
-            "&:hover": { bgcolor: "rgba(255,255,255,0.08)" },
-          }}
-        >
-          <ChevronRight size={20} />
-        </IconButton>
-      </DrawerHeader>
-      
 
-      {menu.map((group) => (
-        <Box key={group.section} sx={{ mt: 1 }}>
-          <Typography
-            variant="caption"
+        {/* Mobile close button */}
+
+        {!isDesktop && (
+          <IconButton
+            onClick={onClose}
+            aria-label="Close sidebar"
+            size="small"
             sx={{
-              display: "block",
-              px: 1.5,
-              py: 1,
-              color: "#64748B",
-              fontWeight: 700,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
+              color: "text.secondary",
+              borderRadius: 2,
+
+              "&:hover": {
+                bgcolor: "action.hover",
+                color: "text.primary",
+              },
             }}
           >
-            {group.section}
-          </Typography>
+            <X size={18} />
+          </IconButton>
+        )}
+      </Box>
 
-          <List sx={{ py: 0.25 }}>
-            {group.items.map((item) => (
-              <ListItemButton
-                key={item.text}
-                component={NavLink}
-                to={item.path}
-                onClick={!isDesktop ? onClose : undefined}
-                sx={{
-                  minHeight: 42,
-                  borderRadius: 2.5,
-                  color: "#CBD5E1",
-                  mb: 0.25,
-                  px: 1.5,
-                  transition: "background-color 180ms ease, color 180ms ease",
-                  "&:hover": {
-                    bgcolor: "rgba(255,255,255,0.08)",
-                    color: "#FFFFFF",
-                  },
-                  "&.active": {
-                    bgcolor: "#1E40AF",
-                    color: "#FFFFFF",
-                    "& .MuiListItemIcon-root": { color: "#FFFFFF" },
-                  },
-                }}
-              >
-                <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
-                  <item.icon size={19} />
-                </ListItemIcon>
+      {/* =====================================================
+          NAVIGATION
+      ====================================================== */}
 
-                <ListItemText
-                  primary={
-                    <Typography component="span" sx={{ fontSize: 14, fontWeight: 500 }}>
-                      {item.text}
-                    </Typography>
-                  }
-                />
-              </ListItemButton>
-            ))}
-          </List>
-        </Box>
-      ))}
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: "auto",
 
-      <Box sx={{ mt: "auto", py: 2 }}>
+          px: 1.25,
+          py: 2,
+
+          "&::-webkit-scrollbar": {
+            width: 5,
+          },
+
+          "&::-webkit-scrollbar-thumb": {
+            bgcolor: "action.disabled",
+            borderRadius: 10,
+          },
+        }}
+      >
+        {menu.map((group) => (
+          <Box key={group.section}>
+            {/* Section title */}
+
+            <Typography
+              variant="caption"
+              sx={{
+                display: "block",
+
+                px: 1.25,
+                mb: 0.75,
+
+                color: "text.disabled",
+
+                fontSize: "0.68rem",
+                fontWeight: 700,
+
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
+            >
+              {group.section}
+            </Typography>
+
+            {/* Navigation items */}
+
+            <List
+              disablePadding
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 0.5,
+              }}
+            >
+              {group.items.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <ListItemButton
+                    key={item.text}
+                    component={NavLink}
+                    to={item.path}
+                    onClick={
+                      !isDesktop ? onClose : undefined
+                    }
+                    sx={{
+                      minHeight: 44,
+
+                      px: 1.25,
+
+                      borderRadius: 2,
+
+                      color: "text.secondary",
+
+                      transition:
+                        "background-color 160ms ease, color 160ms ease",
+
+                      "&:hover": {
+                        bgcolor: "action.hover",
+                        color: "text.primary",
+                      },
+
+                      "&.active": {
+                        bgcolor: "primary.main",
+                        color: "primary.contrastText",
+
+                        boxShadow:
+                          "0 4px 12px rgba(91, 75, 219, 0.18)",
+
+                        "& .MuiListItemIcon-root": {
+                          color: "inherit",
+                        },
+
+                        "& .nav-arrow": {
+                          opacity: 1,
+                          transform: "translateX(0)",
+                        },
+                      },
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 36,
+                        color: "inherit",
+                      }}
+                    >
+                      <Icon size={18} strokeWidth={2} />
+                    </ListItemIcon>
+
+                    <ListItemText
+                      primary={
+                        <Typography
+                          component="span"
+                          sx={{
+                            fontSize: "0.875rem",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {item.text}
+                        </Typography>
+                      }
+                    />
+
+                    <ChevronRight
+                      className="nav-arrow"
+                      size={15}
+                      style={{
+                        opacity: 0,
+                        transform:
+                          "translateX(-4px)",
+                        transition:
+                          "opacity 160ms ease, transform 160ms ease",
+                      }}
+                    />
+                  </ListItemButton>
+                );
+              })}
+            </List>
+          </Box>
+        ))}
+      </Box>
+
+      {/* =====================================================
+          FOOTER
+      ====================================================== */}
+
+      <Box
+        sx={{
+          px: 1.25,
+          py: 1.5,
+
+          borderTop: "1px solid",
+          borderColor: "divider",
+        }}
+      >
         <ListItemButton
           disabled={isPending}
-          onClick={() => logout()}
+          onClick={handleLogout}
           sx={{
-            minHeight: 42,
-            borderRadius: 2.5,
-            color: "#CBD5E1",
-            px: 1.5,
+            minHeight: 44,
+
+            px: 1.25,
+
+            borderRadius: 2,
+
+            color: "text.secondary",
+
             "&:hover": {
-              bgcolor: "rgba(255,255,255,0.08)",
-              color: "#FFFFFF",
+              bgcolor: "action.hover",
+              color: "error.main",
             },
           }}
         >
-          <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
-            <LogOut size={19} />
+          <ListItemIcon
+            sx={{
+              minWidth: 36,
+              color: "inherit",
+            }}
+          >
+            <LogOut size={18} />
           </ListItemIcon>
+
           <ListItemText
             primary={
-              <Typography component="span" sx={{ fontSize: 14, fontWeight: 500 }}>
-                Logout
+              <Typography
+                component="span"
+                sx={{
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
+                }}
+              >
+                {isPending ? "Logging out..." : "Logout"}
               </Typography>
             }
           />
