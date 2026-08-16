@@ -35,7 +35,6 @@ import BatchForm from "../../Components/PanelsWithForms/BatchForm";
 
 import { useDebounce } from "../../hooks/debounce";
 
-import type { BatchFilter } from "../../services/BatchService";
 
 import BatchService from "../../services/BatchService";
 

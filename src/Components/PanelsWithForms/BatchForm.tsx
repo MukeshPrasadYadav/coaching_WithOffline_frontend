@@ -9,6 +9,7 @@ import { useCoachingStore } from "../../store/coaching.store";
 import { useAddBatch } from "../../hooks/batch.hooks";
 import type { AddBatchRequest } from "../../services/BatchService";
 import { useAuthStore } from "../../store/auth.store";
+import React from "react"
 
 type FormType = "Add" | "Update";
 
@@ -80,9 +81,9 @@ const BatchForm = ({ open, closeModal, batchId }: BatchFormProps) => {
   const user = useAuthStore((state) => state.user);
   console.log("coaching",coaching)
 
-  const { data, isPending } = useGetTeacherByCoaching(coaching?.id ?? user?.id ?? "");
+  const { data, isPending } = useGetTeacherByCoaching(coaching?.id ?? user?.id ?? "" ,open);
   const {mutate : addBatch} = useAddBatch(closeModal);
-  console.log("teachers",data)
+ 
   const teachers: any[] = data ?? [];
 
   return (
@@ -358,4 +359,4 @@ const BatchForm = ({ open, closeModal, batchId }: BatchFormProps) => {
   );
 };
 
-export default BatchForm;
+export default React.memo(BatchForm);

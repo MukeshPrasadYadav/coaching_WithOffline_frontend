@@ -42,6 +42,7 @@ import {
 import ProfileSectionCard from "../../Components/ui/ProfileSectionCard";
 import ProfilePhotoUpload from "../../Components/ui/ProfilePhotoUpload";
 import { useState } from "react";
+import { useGetUser } from "../../hooks/auth.hooks";
 
 
 const schema = Yup.object({
@@ -205,6 +206,8 @@ const addressFields: Array<{
 const TeacherProfile = () => {
   const user = useAuthStore( (state) => state.user);
 
+  const {data : teacher} = useGetUser();
+
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const {
@@ -231,23 +234,17 @@ const TeacherProfile = () => {
 
       email: user.email ?? "",
 
-      contactNumber:
-        user.contactNumber ?? "",
+      contactNumber: user.contactNumber ?? "",
 
-      gender:
-        user.gender ?? null,
+      gender: user.gender ?? null,
 
-      dob:
-        user.dob ?? "",
+      dob: user.dob ?? "",
 
-      degrees:
-        user.degress ?? [],
+      degrees: teacher?.degress ?? [],
 
-      subjects:
-        user.subjects ?? [],
+      subjects: teacher?.subjects ?? [],
 
-      experience:
-        user.experience ?? 0,
+      experience: teacher?.experience ?? 0,
 
       address: {
         country:

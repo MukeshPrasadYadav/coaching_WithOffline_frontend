@@ -54,11 +54,12 @@ export const useGetTeacherAppoint = (params : AppointTeacherFilter) =>{
   });
 };
 
-export const useGetTeacherByCoaching = (coachingId : string) =>{
+export const useGetTeacherByCoaching = (coachingId : string, enabled :boolean) =>{
 
     return useQuery({
         queryKey : ["teachers",coachingId],
         queryFn : () => TeacherService.getTeacherByCoachng(coachingId),
+        enabled: Boolean(coachingId) && enabled,
         staleTime: 10 * 60 * 1000,
     gcTime: 15 * 60 * 1000,
     retry: 1,

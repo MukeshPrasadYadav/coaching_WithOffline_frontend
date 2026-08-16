@@ -32,21 +32,14 @@ export interface User {
   isProfileCompleted : boolean;
   gender : Gender | null;
   dob : string;
-  motherName ?: string;
-  fatherName ?: string;
-  parentName ?: string;
-  parentPhone ?: string;
-  parentEmail ?: string;
-  degress ?: string[];
-  experience ?: number;
-  subjects ?: string[];
 }
 
 interface AuthState {
-  user: User | null;
+    user: User | null;
   isAuthenticated: boolean;
+ 
 
-  setUser: (user: User | null) => void;
+  setUser: (user: User | null ) => void;
   
   clearAuth: () => void;
 
@@ -55,17 +48,20 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
-  isAuthenticated: false,
+  studentProfile: null,
+  teacherProfile: null,
 
+  isAuthenticated: false,
   setUser: (user) =>
     set({
       user,
+      
       isAuthenticated: !!user,
     }),
 
  clearAuth() {
      set({
-      user : null,
+      user: null,
       isAuthenticated : false
      })
  },
