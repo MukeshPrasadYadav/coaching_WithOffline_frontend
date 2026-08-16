@@ -4,7 +4,7 @@ import {
   CardContent,
   Typography,
 } from "@mui/material";
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 interface ProfileSectionCardProps {
   icon: ReactNode;
@@ -16,7 +16,7 @@ interface ProfileSectionCardProps {
 
 
 
-export default function ProfileSectionCard({
+ export default function ProfileSectionCard({
   icon,
   title,
   subtitle,

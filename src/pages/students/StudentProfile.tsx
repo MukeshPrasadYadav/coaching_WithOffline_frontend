@@ -10,6 +10,7 @@ import { Navigate } from 'react-router-dom';
 import type { Address } from '../../store/coaching.store';
 import type { CompleteStudentProfile } from '../../services/StudentService';
 import { useUpdateStudentDetails } from '../../hooks/student.hook';
+import { useGetUser } from '../../hooks/auth.hooks';
 
 const addressSchema = Yup.object({
   country: Yup.string().required("Country is required"),
@@ -69,9 +70,10 @@ const StudentProfile = () => {
         const {mutate: updateStudentDetails} = useUpdateStudentDetails();
 
 
-     const user = useAuthStore(state => state.user)
-     console.log("inside student profile ",user)
-    
+     const user = useAuthStore((state) => state.user);
+     
+     const {data : student} = useGetUser();
+     console.log("studnet",student)
         const role: Role | undefined = user?.role;
 
         if(role !== Role.STUDENT){
@@ -84,14 +86,14 @@ const StudentProfile = () => {
           contactNumber: user?.contactNumber ?? "",
           profilePicture: user?.profile_picture ?? "",
           gender : user?.gender ?? null ,
-          motherName : user?.motherName ??"",
-          fatherName : user?.fatherName ?? "",
+          motherName : student?.motherName ??  "",
+          fatherName : student?.fatherName ?? "",
           dob: user?.dob ?? "",
         
-          parentName: user?.parentName ?? "",
-          parentPhone: user?.parentPhone ?? "",
+          parentName: student?.guardianName ?? "",
+          parentPhone: student?.guardianPhone ?? "",
           
-          parentEmail: user?.parentEmail ?? "",
+          parentEmail: student?.guardianEmail ??  "",
           address: {
             country: user?.address?.country ?? "",
             state: user?.address?.state ?? "",
